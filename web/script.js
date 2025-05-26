@@ -20,6 +20,18 @@ function showSelected() {
     return text;
 }
 
+function toMinutes(duration) {
+    duration = Math.round(duration);
+    var seconds = duration % 60;
+    seconds = seconds.toString();
+    if (seconds.length < 2) {
+        seconds = '0' + seconds
+    }
+
+    var minutes = Math.floor(duration / 60);
+    return minutes + ':' + seconds
+}
+
 $(function() {
 
     var records = {
@@ -37,7 +49,7 @@ $(function() {
     }, false);
     
     audioElement.addEventListener("canplay",function(){
-        $("#length").text("Duration:" + audioElement.duration + " seconds");
+        $("#length").text(" / " + toMinutes(audioElement.duration));
         $("#source").text("Source:" + audioElement.src);
         $("#status").text("Status: Ready to play").css("color","green");
     });
@@ -45,11 +57,15 @@ $(function() {
     $('#play').click(function() {
         audioElement.play();
         $("#status").text("Status: Playing");
+        $('#pause').css('display', 'inline');
+        $(this).css('display', 'none');
     });
     
     $('#pause').click(function() {
         audioElement.pause();
         $("#status").text("Status: Paused");
+        $('#play').css('display', 'inline');
+        $(this).css('display', 'none');
     });
     
     $('#restart').click(function() {
@@ -82,7 +98,7 @@ $(function() {
         audioElement.addEventListener("timeupdate",function(){
             var currentTime = audioElement.currentTime;
             var seconds = Math.round(currentTime);
-            $("#currentTime").text(Math.floor(seconds / 60) + ':' + seconds % 60);
+            $("#currentTime").text(toMinutes(seconds));
             for (var i=0; i<data.length; i++) {
                 var segment = data[i];
         

@@ -14,15 +14,12 @@
     <div class="central-panel">
         <column style="width: 70%;" id="left-col">
             <div class="controls">
-                <div id="length">Duration:</div>
-                <div id="source">Source:</div>
-                <div id="status" style="color:red;">Status: Loading</div>
                 <div class="control-buttons">
                     <button id="play"><i class="fa-solid fa-play"></i></button>
                     <button id="pause"><i class="fa-solid fa-pause"></i></button>
                     <button id="restart"><i class="fa-solid fa-arrows-rotate"></i></button>
                     <button id="download-records">Download Records <i class="fa-solid fa-download"></i></button>
-                    <a id="currentTime">0</a>
+                    <button id="time-readout" enabled="false"><a id="currentTime">0</a><a id="length"></a></button>
                 </div>
             </div>
             <div class="transcript"></div>

@@ -1,13 +1,14 @@
 .central-panel {
     max-width: 1200px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 .transcript {
     font-family: 'Times New Roman', Times, serif;
     font-size: 1.2em;
     line-height: 1.5em;
+    margin-top: 100px;
 }
 
 
@@ -48,8 +49,22 @@ column {
 
 .controls {
     box-shadow: 0 1px 5px #a6a6a6;
-    padding: 20px;
+    padding: 15px;
     box-sizing: border-box;
+    position: fixed;
+    background-color: white;
+    width: 57%;
+    margin-left: -10px;
+    font-size: 1.7em;
+    border-radius: 20px;
+}
+
+.controls button {
+    font-size: 1rem;
+    padding: 10px;
+    margin: 0px;
+    min-width: 40px;
+    height: 40px;
 }
 
 #currentTime {
@@ -57,5 +72,24 @@ column {
 }
 
 .control-buttons {
-    margin-top: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+#pause {
+    display: none;
+}
+
+button {
+    background-color: #6184d8;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+#time-readout {
+    background-color: transparent;
+    color: black;
+    margin-left: 0px;
+    padding-left: 0px;
 }
