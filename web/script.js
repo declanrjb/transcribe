@@ -10,9 +10,24 @@ function addChildClassed(parent,newClass,tag='div') {
     return newDiv;
 }
 
+function showSelected() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return text;
+}
+
 $(function() {
 
+    var records = {
+        'notes': []
+    }
+
     const transcript = document.querySelector('.transcript');
+    var comments = document.querySelector('.comments');
 
     var audioElement = document.createElement('audio');
     audioElement.setAttribute('src', '../data/audio_sample.m4a');
@@ -43,7 +58,6 @@ $(function() {
 
     d3.json('../transcript.json')
     .then(data => { 
-        console.log(data)
         data = data['segments']
         var block = addChildClassed(transcript, 'text-block', tag='p');
         for (var i=0; i<data.length; i++) {
@@ -56,7 +70,8 @@ $(function() {
 
         audioElement.addEventListener("timeupdate",function(){
             var currentTime = audioElement.currentTime;
-            $("#currentTime").text("Current second:" + currentTime);
+            var seconds = Math.round(currentTime);
+            $("#currentTime").text(Math.floor(seconds / 60) + ':' + seconds % 60);
             for (var i=0; i<data.length; i++) {
                 var segment = data[i];
         
@@ -68,6 +83,47 @@ $(function() {
         });
         
     })
+
+    $('#showSelected').on('click', function(){
+
+        
+    
+        alert(text);       
+    });
+
+    var textEnterActive = false;
+    var newNote;
+    var newComment;
+    $(document).on('keypress',function(e) {
+        if (e.which == 13) {
+
+            if (textEnterActive) {
+                textEnterActive = false;
+                $(newComment).css('border-color', 'black');
+                records['notes'].push(newNote);
+                console.log(records)
+            } else {
+                textEnterActive = true;
+                newNote = {
+                    'selected': showSelected(),
+                    'note': ''
+                }
+                
+                newComment = addChildClassed(comments, 'comment');
+                $(newComment).css('border-color', 'grey');
+                var highlightTop = $(window.getSelection().anchorNode.parentElement).position().top;
+                $(newComment).css('top', highlightTop + 'px')
+            }            
+        } else {
+            if (e.which == 32) {
+                e.preventDefault()
+                newNote['note'] += ' '
+            }
+            var letter = e.originalEvent.key;
+            newNote['note'] += letter;
+            newComment.textContent = newNote['note']
+        }
+    });
 
 
 })

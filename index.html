@@ -11,18 +11,25 @@
     <script src="web/script.js"></script>
 </head>
 <body>
-    <div class="transcript">
-        <h2>Sound Information</h2>
-        <div id="length">Duration:</div>
-        <div id="source">Source:</div>
-        <div id="status" style="color:red;">Status: Loading</div>
-        <hr>
-        <h2>Control Buttons</h2>
-        <button id="play">Play</button>
-        <button id="pause">Pause</button>
-        <button id="restart">Restart</button>
-        <hr>
-        <h2>Playing Information</h2>
-        <div id="currentTime">0</div>
+    <div class="central-panel">
+        <column style="width: 70%;" id="left-col">
+            <div class="controls">
+                <div id="length">Duration:</div>
+                <div id="source">Source:</div>
+                <div id="status" style="color:red;">Status: Loading</div>
+                <div class="control-buttons">
+                    <button id="play"><i class="fa-solid fa-play"></i></button>
+                    <button id="pause"><i class="fa-solid fa-pause"></i></button>
+                    <button id="restart"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    <a id="currentTime">0</a>
+                </div>
+            </div>
+            <div class="transcript"></div>
+        </column>
+        <column style="width: 30%;" id="right-col">
+            <div class="comments"></div>
+        </column>
+        
     </div>
+    
 </body>

@@ -1,11 +1,15 @@
-.transcript {
-    max-width: 800px;
+.central-panel {
+    max-width: 1200px;
     margin: auto;
+    margin-top: 50px;
+}
+
+.transcript {
     font-family: 'Times New Roman', Times, serif;
     font-size: 1.2em;
     line-height: 1.5em;
-    margin-top: 50px;
 }
+
 
 /*
 .segment:hover {
@@ -17,4 +21,41 @@
     text-decoration: underline;
     text-decoration-color: #6184d8;
     text-decoration-thickness: 3px;
+}
+
+column {
+    float: left;
+    display: block;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+
+.comment {
+    border-left: 2px solid black;
+    border-top: 2px solid black;
+    width: 25%;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    position: absolute;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.2em;
+    line-height: 1.5em;
+}
+
+.controls {
+    box-shadow: 0 1px 5px #a6a6a6;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#currentTime {
+    padding-left: 5px;
+}
+
+.control-buttons {
+    margin-top: 10px;
 }
