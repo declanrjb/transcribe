@@ -84,13 +84,6 @@ $(function() {
         
     })
 
-    $('#showSelected').on('click', function(){
-
-        
-    
-        alert(text);       
-    });
-
     var textEnterActive = false;
     var newNote;
     var newComment;
@@ -124,6 +117,17 @@ $(function() {
             newComment.textContent = newNote['note']
         }
     });
+
+    $('#download-records').on('click', function() {
+        console.log('downloading')
+        $("<a />", {
+            "download": "data.json",
+            "href" : "data:application/json," + encodeURIComponent(JSON.stringify(records))
+          }).appendTo("body")
+          .click(function() {
+             $(this).remove()
+          })[0].click()
+    }) 
 
 
 })
