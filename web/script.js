@@ -66,6 +66,8 @@ $(function() {
             var newAnchor = addChildClassed(block,'segment', tag='a')
             newAnchor.textContent = segment['text'];
             newAnchor.setAttribute('id', 'segment-' + segment['id']);
+            newAnchor.setAttribute('segmentNum', segment['id']);
+            newAnchor.setAttribute('segmentStart', segment['start']);
         }
 
         audioElement.addEventListener("timeupdate",function(){
@@ -76,13 +78,17 @@ $(function() {
                 var segment = data[i];
         
                 if (currentTime > segment['start'] && currentTime < segment['end']) {
-                    $('#segment-' + (segment['id']-1)).removeClass('segment-highlighted')
+                    $('.segment').removeClass('segment-highlighted')
                     $('#segment-' + segment['id']).addClass('segment-highlighted')
                 }        
             }
         });
         
     })
+    
+    $( '.transcript' ).on( "dblclick", function() {
+        audioElement.currentTime = window.getSelection().anchorNode.parentElement.getAttribute('segmentStart')
+    });
 
     var textEnterActive = false;
     var newNote;
@@ -108,13 +114,20 @@ $(function() {
                 $(newComment).css('top', highlightTop + 'px')
             }            
         } else {
-            if (e.which == 32) {
-                e.preventDefault()
-                newNote['note'] += ' '
+            if (textEnterActive) {
+                if (e.which == 32) {
+                    e.preventDefault()
+                    newNote['note'] += ' '
+                }
+                var letter = e.originalEvent.key;
+                newNote['note'] += letter;
+                newComment.textContent = newNote['note']
+            } else {
+                if (e.keyCode == 106) {
+                    audioElement.currentTime = window.getSelection().anchorNode.parentElement.getAttribute('segmentStart')
+                }
             }
-            var letter = e.originalEvent.key;
-            newNote['note'] += letter;
-            newComment.textContent = newNote['note']
+            
         }
     });
 
