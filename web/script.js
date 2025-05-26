@@ -59,15 +59,24 @@ $(function() {
     d3.json('../transcript.json')
     .then(data => { 
         data = data['segments']
-        var block = addChildClassed(transcript, 'text-block', tag='p');
+        var block;
+
+        block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
+        var currentSpeaker = data[0]['speaker']
+        var prevSpeaker = null;
         for (var i=0; i<data.length; i++) {
             var segment = data[i];
+            currentSpeaker = segment['speaker'];
+            if (currentSpeaker != prevSpeaker) {
+                block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
+            }
     
             var newAnchor = addChildClassed(block,'segment', tag='a')
             newAnchor.textContent = segment['text'];
             newAnchor.setAttribute('id', 'segment-' + segment['id']);
             newAnchor.setAttribute('segmentNum', segment['id']);
             newAnchor.setAttribute('segmentStart', segment['start']);
+            prevSpeaker = currentSpeaker;
         }
 
         audioElement.addEventListener("timeupdate",function(){
