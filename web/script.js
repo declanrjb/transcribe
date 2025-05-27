@@ -1,3 +1,6 @@
+var audio_file = '../data/levi_interview.mp3'
+var generated_transcript = '../transcript_full.json'
+
 function addChildClassed(parent,newClass,tag='div') {
     var newDiv = document.createElement(tag);
 
@@ -42,7 +45,7 @@ $(function() {
     var comments = document.querySelector('.comments');
 
     var audioElement = document.createElement('audio');
-    audioElement.setAttribute('src', '../data/audio_sample.m4a');
+    audioElement.setAttribute('src', audio_file);
     
     audioElement.addEventListener('ended', function() {
         this.play();
@@ -72,7 +75,7 @@ $(function() {
         audioElement.currentTime = 0;
     });
 
-    d3.json('../transcript.json')
+    d3.json(generated_transcript)
     .then(data => { 
         data = data['segments']
         var block;
