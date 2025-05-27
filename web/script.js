@@ -1,5 +1,8 @@
 var audio_file = '../data/levi_interview.mp3'
 var generated_transcript = '../transcript_full.json'
+var records = {
+    'notes': []
+}
 
 function addChildClassed(parent,newClass,tag='div') {
     var newDiv = document.createElement(tag);
@@ -35,16 +38,66 @@ function toMinutes(duration) {
     return minutes + ':' + seconds
 }
 
-$(function() {
+function loadFromRecords(records) {
+    var comments = document.querySelector('.comments');
+    var transcript = document.querySelector('.transcript');
+    console.log(records)
+    data = records['transcript']['segments']
+    var block;
 
-    var records = {
-        'notes': []
+    block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
+    var currentSpeaker = data[0]['speaker']
+    var prevSpeaker = null;
+    for (var i=0; i<data.length; i++) {
+        var segment = data[i];
+        currentSpeaker = segment['speaker'];
+        if (currentSpeaker != prevSpeaker) {
+            var speakerHeading = addChildClassed(transcript, 'speaker-label ' + currentSpeaker, div='input')
+            speakerHeading.textContent = currentSpeaker
+            $(speakerHeading).attr('type', 'text')
+            $(speakerHeading).attr('value', currentSpeaker)
+            $(speakerHeading).attr('id', currentSpeaker)
+            block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
+        }
+
+        var newAnchor = addChildClassed(block,'segment', tag='a')
+        newAnchor.textContent = segment['text'];
+        newAnchor.setAttribute('id', 'segment-' + segment['id']);
+        newAnchor.setAttribute('segmentNum', segment['id']);
+        newAnchor.setAttribute('segmentStart', segment['start']);
+        prevSpeaker = currentSpeaker;
     }
 
-    const transcript = document.querySelector('.transcript');
-    var comments = document.querySelector('.comments');
+    $('.speaker-label').on('click', function() {
+        console.log('speaker label clicked')
+    })
 
+    $('.speaker-label').on('change', function(e) {
+        var idChanged = $(e.currentTarget).attr('id')
+        var newName = e.currentTarget.value
+        $('.' + idChanged).attr('value', newName)
+    })
+
+    if ('notes' in records) {
+        var notes = records['notes']
+        for (var i = 0; i<notes.length; i++) {
+            $('#' + notes[i]['anchorID']).css('background-color', 'yellow')
+            newComment = addChildClassed(comments, 'comment');
+            $(newComment).css('border-color', 'black');
+            var highlightTop = $('#' + notes[i]['anchorID']).position().top;
+            $(newComment).css('top', highlightTop + 'px')
+            newComment.textContent = notes[i]['note']
+        }
+    }
+}
+
+
+
+$(function() {
+    
+    var comments = document.querySelector('.comments');
     var audioElement = document.createElement('audio');
+
     audioElement.setAttribute('src', audio_file);
     
     audioElement.addEventListener('ended', function() {
@@ -75,59 +128,39 @@ $(function() {
         audioElement.currentTime = 0;
     });
 
-    d3.json(generated_transcript)
-    .then(data => { 
-        data = data['segments']
-        var block;
-
-        block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
-        var currentSpeaker = data[0]['speaker']
-        var prevSpeaker = null;
+    audioElement.addEventListener("timeupdate",function(){
+        var currentTime = audioElement.currentTime;
+        var seconds = Math.round(currentTime);
+        $("#currentTime").text(toMinutes(seconds));
         for (var i=0; i<data.length; i++) {
             var segment = data[i];
-            currentSpeaker = segment['speaker'];
-            if (currentSpeaker != prevSpeaker) {
-                var speakerHeading = addChildClassed(transcript, 'speaker-label ' + currentSpeaker, div='input')
-                speakerHeading.textContent = currentSpeaker
-                $(speakerHeading).attr('type', 'text')
-                $(speakerHeading).attr('value', currentSpeaker)
-                $(speakerHeading).attr('id', currentSpeaker)
-                block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
-            }
     
-            var newAnchor = addChildClassed(block,'segment', tag='a')
-            newAnchor.textContent = segment['text'];
-            newAnchor.setAttribute('id', 'segment-' + segment['id']);
-            newAnchor.setAttribute('segmentNum', segment['id']);
-            newAnchor.setAttribute('segmentStart', segment['start']);
-            prevSpeaker = currentSpeaker;
+            if (currentTime > segment['start'] && currentTime < segment['end']) {
+                $('.segment').removeClass('segment-highlighted')
+                $('#segment-' + segment['id']).addClass('segment-highlighted')
+            }        
         }
+    });
 
-        audioElement.addEventListener("timeupdate",function(){
-            var currentTime = audioElement.currentTime;
-            var seconds = Math.round(currentTime);
-            $("#currentTime").text(toMinutes(seconds));
-            for (var i=0; i<data.length; i++) {
-                var segment = data[i];
-        
-                if (currentTime > segment['start'] && currentTime < segment['end']) {
-                    $('.segment').removeClass('segment-highlighted')
-                    $('#segment-' + segment['id']).addClass('segment-highlighted')
-                }        
-            }
-        });
 
-        $('.speaker-label').on('click', function() {
-            console.log('speaker label clicked')
-        })
-
-        $('.speaker-label').on('change', function(e) {
-            var idChanged = $(e.currentTarget).attr('id')
-            var newName = e.currentTarget.value
-            $('.' + idChanged).attr('value', newName)
-        })
+/*
+    d3.json(generated_transcript)
+    .then(data => { 
+        records['transcript'] = data
+        loadFromRecords(records)
         
     })
+        */
+
+
+
+    d3.json('../records.json')
+    .then(data => { 
+        records = data
+        loadFromRecords(records)
+    })
+
+        
     
     $( '.transcript' ).on( "dblclick", function() {
         audioElement.currentTime = window.getSelection().anchorNode.parentElement.getAttribute('segmentStart')
@@ -143,12 +176,12 @@ $(function() {
                 textEnterActive = false;
                 $(newComment).css('border-color', 'black');
                 records['notes'].push(newNote);
-                console.log(records)
             } else {
                 textEnterActive = true;
                 newNote = {
                     'selected': showSelected(),
-                    'note': ''
+                    'note': '',
+                    'anchorID': $(window.getSelection().anchorNode.parentElement).attr('id')
                 }
                 
                 newComment = addChildClassed(comments, 'comment');
