@@ -84,6 +84,11 @@ $(function() {
             var segment = data[i];
             currentSpeaker = segment['speaker'];
             if (currentSpeaker != prevSpeaker) {
+                var speakerHeading = addChildClassed(transcript, 'speaker-label ' + currentSpeaker, div='input')
+                speakerHeading.textContent = currentSpeaker
+                $(speakerHeading).attr('type', 'text')
+                $(speakerHeading).attr('value', currentSpeaker)
+                $(speakerHeading).attr('id', currentSpeaker)
                 block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
             }
     
@@ -108,6 +113,16 @@ $(function() {
                 }        
             }
         });
+
+        $('.speaker-label').on('click', function() {
+            console.log('speaker label clicked')
+        })
+
+        $('.speaker-label').on('change', function(e) {
+            var idChanged = $(e.currentTarget).attr('id')
+            var newName = e.currentTarget.value
+            $('.' + idChanged).attr('value', newName)
+        })
         
     })
     

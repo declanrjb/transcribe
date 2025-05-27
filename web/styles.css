@@ -87,9 +87,22 @@ button {
     border-radius: 10px;
 }
 
+button:hover {
+    background-color: #1f487e;
+}
+
 #time-readout {
     background-color: transparent;
     color: black;
     margin-left: 0px;
     padding-left: 0px;
+}
+
+.speaker-label {
+    font-size: 1em;
+    border: none;
+    border-color: transparent;
+    outline: none;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
 }
