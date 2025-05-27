@@ -176,6 +176,7 @@ $(function() {
                 textEnterActive = false;
                 $(newComment).css('border-color', 'black');
                 records['notes'].push(newNote);
+                $(window.getSelection().anchorNode.parentElement)
             } else {
                 textEnterActive = true;
                 newNote = {
@@ -187,6 +188,7 @@ $(function() {
                 newComment = addChildClassed(comments, 'comment');
                 $(newComment).css('border-color', 'grey');
                 var highlightTop = $(window.getSelection().anchorNode.parentElement).position().top;
+                $(window.getSelection().anchorNode.parentElement).css('background-color', 'yellow')
                 $(newComment).css('top', highlightTop + 'px')
             }            
         } else {
