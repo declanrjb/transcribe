@@ -1,5 +1,5 @@
-var audio_file = '../data/levi_interview.mp3'
-var generated_transcript = '../transcript_full.json'
+var audio_file = 'audio.mp3'
+var generated_transcript = 'transcript.json'
 var records = {
     'notes': []
 }
@@ -142,23 +142,22 @@ $(function() {
         }
     });
 
-
-/*
     d3.json(generated_transcript)
     .then(data => { 
         records['transcript'] = data
         loadFromRecords(records)
         
     })
-        */
 
 
 
+    /*
     d3.json('../records.json')
     .then(data => { 
         records = data
         loadFromRecords(records)
     })
+    */
 
         
     
