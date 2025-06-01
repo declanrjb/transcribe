@@ -91,6 +91,17 @@ function loadFromRecords(records) {
     }
 }
 
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+    }
+}
+
 
 
 $(function() {
@@ -150,6 +161,19 @@ $(function() {
     })
 
 
+    $('#upload-records').on('click', function() {
+        $('#session-records-input').click()
+    })
+
+    $('#session-records-input').on('change', function(e) {
+        var file = e.target.files[0];
+        var path = (window.URL || window.webkitURL).createObjectURL(file);
+        readTextFile(path, function(text){
+            var data = JSON.parse(text);
+            console.log('hello world')
+            console.log(data);
+        })
+    })
 
     /*
     d3.json('../records.json')
