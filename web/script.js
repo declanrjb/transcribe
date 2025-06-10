@@ -68,6 +68,7 @@ function loadFromRecords(records) {
             newWord.textContent = word['text']
             newWord.setAttribute('start', word['start'])
             newWord.setAttribute('end', word['end'])
+            newWord.setAttribute('id', 'word-' + (i * j * 7))
         }
         /*newAnchor.textContent = segment['text'];
         newAnchor.setAttribute('id', 'segment-' + segment['id']);
@@ -212,7 +213,13 @@ $(function() {
                 textEnterActive = false;
                 $(newComment).css('border-color', 'black');
                 records['notes'].push(newNote);
-                $(window.getSelection().anchorNode.parentElement)
+                var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().extentNode.parentElement.nextSibling.id)
+                var htmlForm = ''
+                for (var i=0; i<spans.length; i++) {
+                    htmlForm += spans[i].outerHTML
+                }
+                var currSegment = window.getSelection().anchorNode.parentElement.parentElement
+                currSegment.innerHTML = currSegment.innerHTML.replace(htmlForm, '<a class="highlight">' + htmlForm + '</a>')
             } else {
                 textEnterActive = true;
                 newNote = {
@@ -224,7 +231,6 @@ $(function() {
                 newComment = addChildClassed(comments, 'comment');
                 $(newComment).css('border-color', 'grey');
                 var highlightTop = $(window.getSelection().anchorNode.parentElement).position().top;
-                $(window.getSelection().anchorNode.parentElement).css('background-color', 'yellow')
                 $(newComment).css('top', highlightTop + 'px')
             }            
         } else {

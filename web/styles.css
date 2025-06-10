@@ -106,3 +106,7 @@ button:hover {
     font-weight: bold;
     font-family: 'Times New Roman', Times, serif;
 }
+
+.highlight {
+    background-color: yellow;
+}
