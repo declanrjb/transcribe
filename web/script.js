@@ -1,5 +1,5 @@
-var audio_file = 'audio.mp3'
-var generated_transcript = 'transcript.json'
+var audio_file = 'kate-rich.m4a'
+var generated_transcript = 'kate-sample_transcript.json'
 var records = {
     'notes': []
 }
@@ -46,11 +46,11 @@ function loadFromRecords(records) {
     var block;
 
     block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
-    var currentSpeaker = data[0]['speaker']
+    var currentSpeaker = data[0]['speaker_id']
     var prevSpeaker = null;
     for (var i=0; i<data.length; i++) {
         var segment = data[i];
-        currentSpeaker = segment['speaker'];
+        currentSpeaker = segment['speaker_id'];
         if (currentSpeaker != prevSpeaker) {
             var speakerHeading = addChildClassed(transcript, 'speaker-label ' + currentSpeaker, div='input')
             speakerHeading.textContent = currentSpeaker
@@ -60,11 +60,19 @@ function loadFromRecords(records) {
             block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
         }
 
-        var newAnchor = addChildClassed(block,'segment', tag='a')
-        newAnchor.textContent = segment['text'];
+        var newAnchor = addChildClassed(block,'segment', tag='p')
+        var words = segment['words']
+        for (var j=0; j<words.length; j++) {
+            var word = words[j]
+            var newWord = addChildClassed(newAnchor, 'word', tag='span')
+            newWord.textContent = word['text']
+            newWord.setAttribute('start', word['start'])
+            newWord.setAttribute('end', word['end'])
+        }
+        /*newAnchor.textContent = segment['text'];
         newAnchor.setAttribute('id', 'segment-' + segment['id']);
         newAnchor.setAttribute('segmentNum', segment['id']);
-        newAnchor.setAttribute('segmentStart', segment['start']);
+        newAnchor.setAttribute('segmentStart', segment['start']);*/
         prevSpeaker = currentSpeaker;
     }
 
@@ -157,7 +165,11 @@ $(function() {
     .then(data => { 
         records['transcript'] = data
         loadFromRecords(records)
-        
+        $( '.word' ).on( "dblclick", function(e) {
+            console.log(e.currentTarget.getAttribute('start'))
+            audioElement.currentTime = e.currentTarget.getAttribute('start')
+            audioElement.play()
+        });
     })
 
 
@@ -184,10 +196,11 @@ $(function() {
     */
 
         
-    
+    /*
     $( '.transcript' ).on( "dblclick", function() {
         audioElement.currentTime = window.getSelection().anchorNode.parentElement.getAttribute('segmentStart')
     });
+    */
 
     var textEnterActive = false;
     var newNote;
