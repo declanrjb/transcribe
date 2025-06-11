@@ -85,7 +85,7 @@ function loadFromRecords(records) {
             newWord.setAttribute('end', word['end'])
             newWord.setAttribute('id', 'word-' + ((i+1) * (j+1) * 7))
         }
-        
+
         prevSpeaker = currentSpeaker;
     }
 
@@ -186,6 +186,8 @@ $(function() {
         $( '.word' ).on( "dblclick", function(e) {
             audioElement.currentTime = e.currentTarget.getAttribute('start')
             audioElement.play()
+            $('#play').css('display', 'none')
+            $('#pause').css('display', 'inline')
         });
     })
 
