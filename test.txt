@@ -1,4 +1,4 @@
-curl -X POST https://api.elevenlabs.io/v1/speech-to-text \
+curl -v -X POST https://api.elevenlabs.io/v1/speech-to-text \
      -H "Content-Type: multipart/form-data" \
     -H "xi-api-key: sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1" \
      -F model_id="scribe_v1" \

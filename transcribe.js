@@ -18,11 +18,7 @@ $(function() {
 
   $('#audio-input').on('change', function(e) {
     var file = e.target.files[0];
-    //on change event  
-    console.log(file)
-    console.log(e)
 
-    
     const reader = new FileReader();
     reader.onload = async (e) => {
 
@@ -31,19 +27,22 @@ $(function() {
         console.log(audioBlob)
 
         console.log(e)
+        console.log(new File([audioBlob], 'audio.mp3'))
         console.log('sending...')
+
         const formData = new FormData();
-        formData.append('file', audioBlob, 'audio.mp3');
+        formData.append('file', e.target.result);
         formData.append('model_id', 'scribe_v1')
     
         fetch('https://api.elevenlabs.io/v1/speech-to-text', {
           method: 'POST',
           headers: {
-            'xi-api-key': 'sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
+            'xi-api-key': 'sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1',
+            'content-type': 'multipart/form-data'
           },
           body: {
             'model_id': 'scribe_v1',
-            'file': new File([audioBlob], 'audio.mp3')
+            'file': e.target.result
           }
         });
               
