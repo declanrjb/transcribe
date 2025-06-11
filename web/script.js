@@ -26,6 +26,22 @@ function showSelected() {
     return text;
 }
 
+function highlightSpans(spans) {
+    var htmlForm = ''
+    for (var i=0; i<spans.length; i++) {
+        htmlForm += spans[i].outerHTML
+    }
+
+    var sum = 0;
+    $(spans).each(function() {
+        sum += parseFloat($(this).attr('id').replace('word-', ''))
+    })
+    var newId = 'highlight-' + sum
+
+    document.querySelector('.transcript').innerHTML = document.querySelector('.transcript').innerHTML.replace(htmlForm, '<a class="highlight" id="' + newId + '">' + htmlForm + '</a>')
+    return(newId)
+}
+
 function toMinutes(duration) {
     duration = Math.round(duration);
     var seconds = duration % 60;
@@ -41,7 +57,6 @@ function toMinutes(duration) {
 function loadFromRecords(records) {
     var comments = document.querySelector('.comments');
     var transcript = document.querySelector('.transcript');
-    console.log(records)
     data = records['transcript']['segments']
     var block;
 
@@ -68,12 +83,9 @@ function loadFromRecords(records) {
             newWord.textContent = word['text']
             newWord.setAttribute('start', word['start'])
             newWord.setAttribute('end', word['end'])
-            newWord.setAttribute('id', 'word-' + (i * j * 7))
+            newWord.setAttribute('id', 'word-' + ((i+1) * (j+1) * 7))
         }
-        /*newAnchor.textContent = segment['text'];
-        newAnchor.setAttribute('id', 'segment-' + segment['id']);
-        newAnchor.setAttribute('segmentNum', segment['id']);
-        newAnchor.setAttribute('segmentStart', segment['start']);*/
+        
         prevSpeaker = currentSpeaker;
     }
 
@@ -86,16 +98,17 @@ function loadFromRecords(records) {
         var newName = e.currentTarget.value
         $('.' + idChanged).attr('value', newName)
     })
-
     if ('notes' in records) {
         var notes = records['notes']
         for (var i = 0; i<notes.length; i++) {
-            $('#' + notes[i]['anchorID']).css('background-color', 'yellow')
+            var note = notes[i];
+            document.querySelector('.transcript').innerHTML = document.querySelector('.transcript').innerHTML.replace(note['highlightContents'], note['highlightAnchor'])
+
             newComment = addChildClassed(comments, 'comment');
             $(newComment).css('border-color', 'black');
-            var highlightTop = $('#' + notes[i]['anchorID']).position().top;
+            var highlightTop = $('#' + note['highlightId']).position().top;
             $(newComment).css('top', highlightTop + 'px')
-            newComment.textContent = notes[i]['note']
+            newComment.textContent = note['note']
         }
     }
 }
@@ -164,10 +177,13 @@ $(function() {
 
     d3.json(generated_transcript)
     .then(data => { 
-        records['transcript'] = data
+        if ('notes' in data) {
+            records = data
+        } else {
+            records['transcript'] = data['transcript']
+        }
         loadFromRecords(records)
         $( '.word' ).on( "dblclick", function(e) {
-            console.log(e.currentTarget.getAttribute('start'))
             audioElement.currentTime = e.currentTarget.getAttribute('start')
             audioElement.play()
         });
@@ -180,28 +196,17 @@ $(function() {
 
     $('#session-records-input').on('change', function(e) {
         var file = e.target.files[0];
-        var path = (window.URL || window.webkitURL).createObjectURL(file);
-        readTextFile(path, function(text){
-            var data = JSON.parse(text);
-            console.log('hello world')
-            console.log(data);
-        })
+        //on change event  
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            console.log(e.target.result);
+            d3.json(e.target.result)
+            .then(data => { 
+                loadFromRecords(data)
+            })
+        };
+        reader.readAsDataURL(file);
     })
-
-    /*
-    d3.json('../records.json')
-    .then(data => { 
-        records = data
-        loadFromRecords(records)
-    })
-    */
-
-        
-    /*
-    $( '.transcript' ).on( "dblclick", function() {
-        audioElement.currentTime = window.getSelection().anchorNode.parentElement.getAttribute('segmentStart')
-    });
-    */
 
     var textEnterActive = false;
     var newNote;
@@ -214,18 +219,17 @@ $(function() {
                 $(newComment).css('border-color', 'black');
                 records['notes'].push(newNote);
                 var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().extentNode.parentElement.nextSibling.id)
-                var htmlForm = ''
-                for (var i=0; i<spans.length; i++) {
-                    htmlForm += spans[i].outerHTML
-                }
-                var currSegment = window.getSelection().anchorNode.parentElement.parentElement
-                currSegment.innerHTML = currSegment.innerHTML.replace(htmlForm, '<a class="highlight">' + htmlForm + '</a>')
+                var highlightId = highlightSpans(spans)
+                newNote['highlightId'] = highlightId
+                newNote['highlightAnchor'] = document.querySelector('#' + highlightId).outerHTML
+                newNote['highlightContents'] = document.querySelector('#' + highlightId).innerHTML
+                console.log(newNote)
+                
             } else {
                 textEnterActive = true;
                 newNote = {
                     'selected': showSelected(),
                     'note': '',
-                    'anchorID': $(window.getSelection().anchorNode.parentElement).attr('id')
                 }
                 
                 newComment = addChildClassed(comments, 'comment');
@@ -252,9 +256,8 @@ $(function() {
     });
 
     $('#download-records').on('click', function() {
-        console.log('downloading')
         $("<a />", {
-            "download": "data.json",
+            "download": generated_transcript.replace('.json', '_annotated.json'),
             "href" : "data:application/json," + encodeURIComponent(JSON.stringify(records))
           }).appendTo("body")
           .click(function() {
