@@ -208,7 +208,6 @@ $(function() {
         //on change event  
         const reader = new FileReader();
         reader.onload = (e) => {
-            console.log(e.target.result);
             d3.json(e.target.result)
             .then(data => { 
                 loadFromRecords(data)
@@ -232,7 +231,6 @@ $(function() {
                 newNote['highlightId'] = highlightId
                 newNote['highlightAnchor'] = document.querySelector('#' + highlightId).outerHTML
                 newNote['highlightContents'] = document.querySelector('#' + highlightId).innerHTML
-                console.log(newNote)
                 
             } else {
                 textEnterActive = true;
