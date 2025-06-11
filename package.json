@@ -1,0 +1,29 @@
+{
+  "name": "transcribe",
+  "version": "1.0.0",
+  "description": "transcription of basic audio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/declanrjb/transcribe.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/declanrjb/transcribe/issues"
+  },
+  "homepage": "https://github.com/declanrjb/transcribe#readme",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.2.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
