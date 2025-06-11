@@ -1,7 +1,8 @@
 var audio_file = 'kate-rich.m4a'
 var generated_transcript = 'kate-sample_transcript.json'
 var records = {
-    'notes': []
+    'notes': [],
+    'speakers': {}
 }
 
 function addChildClassed(parent,newClass,tag='div') {
@@ -97,6 +98,7 @@ function loadFromRecords(records) {
         var idChanged = $(e.currentTarget).attr('id')
         var newName = e.currentTarget.value
         $('.' + idChanged).attr('value', newName)
+        records['speakers'][idChanged] = newName
     })
     if ('notes' in records) {
         var notes = records['notes']
@@ -109,6 +111,11 @@ function loadFromRecords(records) {
             var highlightTop = $('#' + note['highlightId']).position().top;
             $(newComment).css('top', highlightTop + 'px')
             newComment.textContent = note['note']
+        }
+    }
+    if ('speakers' in records) {
+        for (const [key, value] of Object.entries(records['speakers'])) {
+            $('.' + key).attr('value', value)    
         }
     }
 }
