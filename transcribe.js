@@ -22,6 +22,21 @@ $(function() {
     console.log(file)
     $('#audio-host').attr('src', URL.createObjectURL(file))
     console.log($('#audio-host').attr('src'))
+
+    console.log('sending...')
+    const form = new FormData();
+    form.append('model_id', 'scribe_v1');
+    form.append('cloud_storage_url', $('#audio-host').attr('src'));
+
+    fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'xi-api-key': 'sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
+      },
+      body: form
+    });
+
     /*
     const reader = new FileReader();
     reader.onload = async (e) => {
