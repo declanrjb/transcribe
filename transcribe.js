@@ -20,45 +20,36 @@ $(function() {
     var file = e.target.files[0];
     //on change event  
     console.log(file)
-    $('#audio-host').attr('src', URL.createObjectURL(file))
-    console.log($('#audio-host').attr('src'))
+    console.log(e)
 
-    console.log('sending...')
-    const form = new FormData();
-    form.append('model_id', 'scribe_v1');
-    form.append('cloud_storage_url', $('#audio-host').attr('src'));
-
-    fetch('https://api.elevenlabs.io/v1/speech-to-text', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'xi-api-key': 'sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
-      },
-      body: form
-    });
-
-    /*
+    
     const reader = new FileReader();
     reader.onload = async (e) => {
 
         console.log(e.target.result)
         const audioBlob = new Blob([e.target.result], { type: "audio/mp3" });
         console.log(audioBlob)
-        
-        
 
-        const client = new ElevenLabsClient({ apiKey: "" });
-        await client.speechToText.convert({
-            modelId: "scribe_v1",
-            file: e.target.result
+        console.log(e)
+        console.log('sending...')
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.mp3');
+        formData.append('model_id', 'scribe_v1')
+    
+        fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+          method: 'POST',
+          headers: {
+            'xi-api-key': 'sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
+          },
+          body: {
+            'model_id': 'scribe_v1',
+            'file': new File([audioBlob], 'audio.mp3')
+          }
         });
-
-        
-
-        
+              
     };
     reader.readAsDataURL(file);
-    */
+    
   })
 })
 
