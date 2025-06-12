@@ -16,7 +16,7 @@ def transcribe():
 
     file = request.args['file']
 
-    r = Response(jsonify({
+    r = Response(json.dumps({
         'file': file
     }), mimetype='application/json')
     
