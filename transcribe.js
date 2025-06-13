@@ -12,6 +12,7 @@ $(function() {
         data.append('file', file)
         data.append('user', 'hubot')
 
+        console.log('sending')
         let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
             method: 'POST',
             body: data

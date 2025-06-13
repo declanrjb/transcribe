@@ -16,7 +16,7 @@ app = Flask(__name__)
 def transcribe():
 
     r = Response(json.dumps({
-        'request': request.values
+        'request': request.form
     }), mimetype='application/json')
 
     r.headers.add('Access-Control-Allow-Origin', '*')
