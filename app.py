@@ -14,8 +14,7 @@ app = Flask(__name__)
 # no modification required beyond function name
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
-    file = request.files[0]
-    print(request.files)
+    print(request)
     r = Response(json.dumps({
         'request': 'hello'
     }), mimetype='application/json')
