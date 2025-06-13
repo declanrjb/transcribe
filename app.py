@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 # no modification required beyond function name
 @app.route('/transcribe')
-def transcribe():
+def transcribe(methods=['GET', 'POST']):
 
     r = Response(json.dumps({
         'request': request.args

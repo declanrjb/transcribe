@@ -17,7 +17,8 @@ $(function() {
             body: data
         })
 
-        console.log(response)
+        const r = await response.json();
+        console.log(r);
 /*
         const reader = new FileReader();
         reader.onload = async (e) => {
