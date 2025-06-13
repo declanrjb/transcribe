@@ -15,9 +15,9 @@ app = Flask(__name__)
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
     file = request.files[0]
-
+    print(request.files)
     r = Response(json.dumps({
-        'request': file.filename
+        'request': 'hello'
     }), mimetype='application/json')
     
     r.headers.add('Access-Control-Allow-Origin', '*')
