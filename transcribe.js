@@ -1,9 +1,18 @@
 
-import { ElevenLabsClient } from "elevenlabs";
+$(function() {
 
-const client = new ElevenLabsClient({ apiKey: "sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1" });
+    $('#upload-audio').on('click', function() {
+        $('#audio-input').click()
+    })
 
-await client.speechToText.convert({
-	model_id: "scribe_v1",
-	file: file,
-});
+	$('#audio-input').on('change', function(e) {
+        var file = e.target.files[0]
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            console.log(e.target.result)
+                
+        };
+        reader.readAsDataURL(file);
+    })
+})
