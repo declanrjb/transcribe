@@ -12,8 +12,8 @@ import json
 app = Flask(__name__)
 
 # no modification required beyond function name
-@app.route('/transcribe')
-def transcribe(methods=['GET', 'POST']):
+@app.route('/transcribe', methods=['GET', 'POST'])
+def transcribe():
 
     r = Response(json.dumps({
         'request': request.args
