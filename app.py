@@ -14,12 +14,10 @@ app = Flask(__name__)
 # no modification required beyond function name
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
-    print(request)
-    # r = Response(json.dumps({
-    #     'request': 'hello'
-    # }), mimetype='application/json')
-    
-    r = Response(request)
+
+    r = Response(json.dumps({
+        'request': request.values
+    }), mimetype='application/json')
 
     r.headers.add('Access-Control-Allow-Origin', '*')
     return r
