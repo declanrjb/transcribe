@@ -56,9 +56,13 @@ function toMinutes(duration) {
 }
 
 function loadFromRecords(records) {
+    $('.transcript').html('')
+    console.log('inside load from records')
+    console.log(records)
     var comments = document.querySelector('.comments');
     var transcript = document.querySelector('.transcript');
     data = records['transcript']['segments']
+    console.log(data)
     var block;
 
     block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
@@ -182,6 +186,7 @@ $(function() {
         }
     });
 
+
     d3.json(generated_transcript)
     .then(data => { 
         if ('notes' in data) {
@@ -214,6 +219,28 @@ $(function() {
             })
         };
         reader.readAsDataURL(file);
+    })
+
+    $('#upload-audio').on('click', function() {
+        $('#audio-input').click()
+    })
+
+	$('#audio-input').on('change', async function(e) {
+        var file = e.target.files[0]
+
+        var data = new FormData()
+        data.append('file', file)
+        data.append('user', 'hubot')
+
+        console.log('sending')
+        let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
+            method: 'POST',
+            body: data
+        })
+
+        const r = await response.json();
+        console.log(r)
+        loadFromRecords(r)
     })
 
     var textEnterActive = false;

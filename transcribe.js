@@ -13,7 +13,7 @@ $(function() {
         data.append('user', 'hubot')
 
         console.log('sending')
-        let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
+        let response = await fetch('http://127.0.0.1:5000/transcribe', {
             method: 'POST',
             body: data
         })
