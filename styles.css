@@ -48,18 +48,13 @@ column {
 }
 
 .controls {
-    box-shadow: 0 1px 5px #a6a6a6;
-    padding: 15px;
-    box-sizing: border-box;
     position: fixed;
-    background-color: white;
+
     width: fit-content;
-    margin-left: -10px;
-    font-size: 1.7em;
-    border-radius: 20px;
+    width: 500px;
 }
 
-.controls button {
+.control-buttons button {
     font-size: 1rem;
     padding: 10px;
     margin: 0px;
@@ -74,6 +69,24 @@ column {
 .control-buttons {
     margin-top: 0px;
     margin-bottom: 0px;
+    position: relative;
+    width: fit-content;
+    box-shadow: 0 1px 5px #a6a6a6;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 1.7em !important;
+    border-radius: 20px;
+    background-color: white;
+}
+
+#upload-buttons {
+    float: right;
+}
+
+#upload-buttons button {
+    font-size: 22px;
+    height: fit-content;
+    width: 50px;
 }
 
 #pause {
@@ -109,4 +122,20 @@ button:hover {
 
 .highlight {
     background-color: yellow;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+.fa-spinner {
+    animation-name: spin;
+    animation-duration: 2500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear; 
 }

@@ -226,6 +226,7 @@ $(function() {
     })
 
 	$('#audio-input').on('change', async function(e) {
+        $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-spinner')
         var file = e.target.files[0]
 
         var data = new FormData()
@@ -238,8 +239,10 @@ $(function() {
             body: data
         })
 
+
+
         const r = await response.json();
-        console.log(r)
+        $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
         loadFromRecords(r)
     })
 
