@@ -56,6 +56,10 @@ def transcribe():
             })
         prev_speaker = curr_speaker
 
+
+    for segment in result['segments']:
+        segment['speaker_id'] = segment['speaker_id'].replace('_', ' ').upper()
+
     result = {
         'transcript':{
             'segments': result
