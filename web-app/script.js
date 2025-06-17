@@ -122,6 +122,15 @@ function loadFromRecords(records) {
             $('.' + key).attr('value', value)    
         }
     }
+
+    $( '.word' ).on( "dblclick", function(e) {
+        console.log(e)
+        var audioElement = document.getElementById('audio-host')
+        audioElement.currentTime = e.currentTarget.getAttribute('start')
+        audioElement.play()
+        $('#play').css('display', 'none')
+        $('#pause').css('display', 'inline')
+    });
 }
 
 function readTextFile(file, callback) {
@@ -140,9 +149,7 @@ function readTextFile(file, callback) {
 $(function() {
     
     var comments = document.querySelector('.comments');
-    var audioElement = document.createElement('audio');
-
-    audioElement.setAttribute('src', audio_file);
+    var audioElement = document.getElementById('audio-host')
     
     audioElement.addEventListener('ended', function() {
         this.play();
@@ -187,6 +194,7 @@ $(function() {
     });
 
 
+    /*
     d3.json(generated_transcript)
     .then(data => { 
         if ('notes' in data) {
@@ -195,13 +203,8 @@ $(function() {
             records['transcript'] = data['transcript']
         }
         loadFromRecords(records)
-        $( '.word' ).on( "dblclick", function(e) {
-            audioElement.currentTime = e.currentTarget.getAttribute('start')
-            audioElement.play()
-            $('#play').css('display', 'none')
-            $('#pause').css('display', 'inline')
-        });
     })
+    */
 
 
     $('#upload-records').on('click', function() {
@@ -229,7 +232,7 @@ $(function() {
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-spinner')
         var file = e.target.files[0]
 
-        $('#audio-host').attr('src', file)
+        $('#audio-host').attr('src', URL.createObjectURL(file))
         var data = new FormData()
         data.append('file', file)
         data.append('user', 'hubot')

@@ -84,9 +84,9 @@ column {
 }
 
 #upload-buttons button {
-    font-size: 22px;
+    font-size: 20px;
     height: fit-content;
-    width: 50px;
+    width: 45px;
 }
 
 #pause {
@@ -138,4 +138,8 @@ button:hover {
     animation-duration: 2500ms;
     animation-iteration-count: infinite;
     animation-timing-function: linear; 
+}
+
+.word {
+    z-index: 99;
 }

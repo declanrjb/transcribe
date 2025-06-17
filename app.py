@@ -20,7 +20,8 @@ def transcribe():
     raw_audio = BytesIO(request.files['file'].read())
 
     elevenlabs = ElevenLabs(
-        api_key=os.environ.get('ELEVENLABS_API_KEY'),
+        #api_key=os.environ.get('ELEVENLABS_API_KEY'),
+        api_key='sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
     )
 
     transcription = elevenlabs.speech_to_text.convert(
@@ -57,8 +58,8 @@ def transcribe():
         prev_speaker = curr_speaker
 
 
-    for segment in result['segments']:
-        segment['speaker_id'] = segment['speaker_id'].replace('_', ' ').upper()
+    for segment in result:
+        segment['speaker_id'] = segment['speaker_id'].replace('_', ' ').title()
 
     result = {
         'transcript':{
