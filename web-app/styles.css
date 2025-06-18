@@ -143,3 +143,75 @@ button:hover {
 .word {
     z-index: 99;
 }
+
+.file-button {
+    background-color: #f61713;
+}
+
+.file-button:hover {
+    background-color: #8d0801;
+}
+
+.central-panel {
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.intro-panel {
+    width: 600px;
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
+    opacity: 1;
+    position: relative;
+    transition: opacity 1s, margin-top 1.5s, right 1.5s;
+}
+
+.intro-header {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 500;
+}
+
+.intro-buttons {
+    margin-top: 20px;
+    width: 420px;
+    margin: auto;
+}
+
+.intro-button {
+    font-size: 1.4em;
+    background-color: transparent;
+    font-family: 'Times New Roman', Times, serif;
+    color: black;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 0px;
+    box-shadow: 0 1px 5px lightgrey;
+    border-radius: 10px;
+    padding: 10px;
+    transition: margin .5s;
+    position: relative;
+    margin-top: 0px;
+    width: fit-content;
+    float: left;
+}
+
+.intro-button:hover {
+    background-color: transparent;
+}
+
+#upload-arrow {
+    color: #eb5e28;
+}
+
+#resume-arrow {
+    color: #91a6ff;
+}
+
+#intro-upload-button:hover {
+    margin-top: -5px;
+}
+
+#intro-resume-button:hover {
+    margin-left: 15px !important;
+}

@@ -1,8 +1,9 @@
 var audio_file = 'kate-rich.m4a'
 var generated_transcript = 'kate-sample_transcript.json'
-var records = {
+var global_records = {
     'notes': [],
-    'speakers': {}
+    'speakers': {},
+    'transcript': {}
 }
 
 function addChildClassed(parent,newClass,tag='div') {
@@ -56,6 +57,9 @@ function toMinutes(duration) {
 }
 
 function loadFromRecords(records) {
+    $('.transcript').slideUp(0)
+    $('.central-panel').css('opacity', 1)
+    console.log(records)
     $('.transcript').html('')
     console.log('inside load from records')
     console.log(records)
@@ -131,6 +135,9 @@ function loadFromRecords(records) {
         $('#play').css('display', 'none')
         $('#pause').css('display', 'inline')
     });
+
+    $('.transcript').slideDown(1000)
+    return(records)
 }
 
 function readTextFile(file, callback) {
@@ -142,6 +149,20 @@ function readTextFile(file, callback) {
             callback(rawFile.responseText);
         }
     }
+}
+
+function disappear(selector) {
+    $(selector).css('margin-top', '5%').css('opacity', 0)
+    setTimeout(function() {
+        $(selector).css('display', 'none')
+      }, 1500);
+}
+
+function disappearRight(selector) {
+    $(selector).css('right', '-10px').css('opacity', 0)
+    setTimeout(function() {
+        $(selector).css('display', 'none')
+      }, 1500);
 }
 
 
@@ -183,28 +204,10 @@ $(function() {
         var currentTime = audioElement.currentTime;
         var seconds = Math.round(currentTime);
         $("#currentTime").text(toMinutes(seconds));
-        for (var i=0; i<data.length; i++) {
-            var segment = data[i];
-    
-            if (currentTime > segment['start'] && currentTime < segment['end']) {
-                $('.segment').removeClass('segment-highlighted')
-                $('#segment-' + segment['id']).addClass('segment-highlighted')
-            }        
-        }
     });
 
 
-    /*
-    d3.json(generated_transcript)
-    .then(data => { 
-        if ('notes' in data) {
-            records = data
-        } else {
-            records['transcript'] = data['transcript']
-        }
-        loadFromRecords(records)
-    })
-    */
+
 
 
     $('#upload-records').on('click', function() {
@@ -212,16 +215,18 @@ $(function() {
     })
 
     $('#session-records-input').on('change', function(e) {
-        var file = e.target.files[0];
-        //on change event  
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            d3.json(e.target.result)
-            .then(data => { 
-                loadFromRecords(data)
-            })
-        };
-        reader.readAsDataURL(file);
+
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(e.target.files[0]);
+
+        function onReaderLoad(event){
+            console.log(event.target.result);
+            var data = JSON.parse(event.target.result);
+            console.log(data);
+            global_records['transcript']['segments'] = data['transcript']['segments']
+            loadFromRecords(data)
+        }
     })
 
     $('#upload-audio').on('click', function() {
@@ -247,6 +252,7 @@ $(function() {
 
         const r = await response.json();
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
+        global_records['transcript']['segments'] = r['transcript']['segments']
         loadFromRecords(r)
     })
 
@@ -259,7 +265,7 @@ $(function() {
             if (textEnterActive) {
                 textEnterActive = false;
                 $(newComment).css('border-color', 'black');
-                records['notes'].push(newNote);
+                global_records['notes'].push(newNote);
                 var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().extentNode.parentElement.nextSibling.id)
                 var highlightId = highlightSpans(spans)
                 newNote['highlightId'] = highlightId
@@ -297,14 +303,33 @@ $(function() {
     });
 
     $('#download-records').on('click', function() {
+        console.log(global_records)
         $("<a />", {
-            "download": generated_transcript.replace('.json', '_annotated.json'),
-            "href" : "data:application/json," + encodeURIComponent(JSON.stringify(records))
+            "download": 'transcript.json'.replace('.json', '_annotated.json'),
+            "href" : "data:application/json," + encodeURIComponent(JSON.stringify(global_records))
           }).appendTo("body")
           .click(function() {
              $(this).remove()
           })[0].click()
     }) 
+
+    $('#intro-upload-button').on('click', function() {
+        disappear('.intro-panel')
+        setTimeout(function() {
+            $('#audio-input').click()
+          }, 200);
+        
+    })
+
+    $('#intro-resume-button').on('click', function() {
+        disappear('.intro-panel')
+        setTimeout(function() {
+            $('#session-records-input').click()
+          }, 200);
+        
+    })
+
+    
 
 
 })

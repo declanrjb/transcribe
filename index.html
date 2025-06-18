@@ -17,26 +17,30 @@
         <column style="width: 70%;" id="left-col">
             <div class="controls">
                 <div class="control-buttons">
-                    <button id="play"><i class="fa-solid fa-play"></i></button>
-                    <button id="pause"><i class="fa-solid fa-pause"></i></button>
-                    <button id="restart"><i class="fa-solid fa-arrows-rotate"></i></button>
-                    <button id="time-readout" enabled="false"><a id="currentTime">0</a><a id="length"></a></button>
+                    <button id="play" class="audio-button"><i class="fa-solid fa-play"></i></button>
+                    <button id="pause" class="audio-button"><i class="fa-solid fa-pause"></i></button>
+                    <button id="restart" class="audio-button"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    <button id="download-records" class="file-button"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button id="upload-records" class="file-button"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+                    <input type='file' id="session-records-input" hidden/>
+                    <button id="upload-audio" class="file-button"><i class="fa-solid fa-file-audio"></i></button>
+                    <input type='file' id="audio-input" hidden/>
+                    <button id="time-readout" enabled="false"><a id="currentTime">0:00</a><a id="length"></a></button>
                 </div>
             </div>
-            
             <div class="transcript"></div>
         </column>
         <column style="width: 30%;" id="right-col">
-            <div class="control-buttons" id="upload-buttons">
-                <button id="download-records"><i class="fa-solid fa-floppy-disk"></i></button>
-                <button id="upload-records"><i class="fa-solid fa-cloud-arrow-up"></i></button>
-                <input type='file' id="session-records-input" hidden/>
-                <button id="upload-audio"><i class="fa-solid fa-file-audio"></i></button>
-                <input type='file' id="audio-input" hidden/>
-            </div>
             <div class="comments"></div>
         </column>
         
+    </div>
+    <div class="intro-panel">
+        <h2 class="intro-header">Welcome to Scrivener. How can I help you today?</h2>
+        <div class="intro-buttons">
+            <div class="intro-button" id="intro-upload-button">Upload Audio <i class="fa-solid fa-circle-up" id="upload-arrow"></i></div>
+            <div class="intro-button" id="intro-resume-button">Resume Session <i class="fa-solid fa-circle-right" id="resume-arrow"></i></div>
+        </div>
     </div>
     
 </body>
