@@ -77,6 +77,7 @@ column {
     font-size: 1.7em !important;
     border-radius: 20px;
     background-color: white;
+    opacity: 0;
 }
 
 #upload-buttons {
@@ -153,14 +154,14 @@ button:hover {
 }
 
 .central-panel {
-    opacity: 0;
     transition: opacity 1s;
+    display: none;
 }
 
 .intro-panel {
     width: 600px;
     margin: auto;
-    margin-top: 10%;
+    margin-top: 18%;
     text-align: center;
     opacity: 1;
     position: relative;
@@ -194,6 +195,8 @@ button:hover {
     margin-top: 0px;
     width: fit-content;
     float: left;
+    z-index: 99;
+    background-color: white;
 }
 
 .intro-button:hover {
@@ -220,4 +223,27 @@ button:hover {
     text-decoration: underline;
     text-decoration-thickness: 3px;
     text-decoration-color: #1f487e;
+}
+
+.intro-image {
+    width: 50%;
+    opacity: 0.5;
+    position: relative;
+}
+
+.laurel {
+    width: 200px;
+    position: absolute;
+    margin-top: -60px;
+    opacity: .5;
+    z-index: -99;
+}
+
+#laurel-right {
+    left: 83%;
+}
+
+#laurel-left {
+    transform: scale(-1, 1);
+    left: -110px;
 }

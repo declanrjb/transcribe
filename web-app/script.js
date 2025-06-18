@@ -267,7 +267,11 @@ $(function() {
         data.append('user', 'hubot')
 
         $('.transcript').slideUp(0)
-        $('.central-panel').css('opacity', 1)
+        $('.central-panel').css('display', 'block')
+        $('.control-buttons').animate({
+            opacity: 1
+            }, 500);
+        
 
         console.log('sending')
         let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
@@ -344,7 +348,7 @@ $(function() {
         disappear('.intro-panel')
         setTimeout(function() {
             $('#audio-input').click()
-          }, 200);
+          }, 0);
         
     })
 
@@ -352,7 +356,7 @@ $(function() {
         disappear('.intro-panel')
         setTimeout(function() {
             $('#session-records-input').click()
-          }, 200);
+          }, 0);
         
     })
 
