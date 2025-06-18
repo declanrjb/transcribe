@@ -215,3 +215,9 @@ button:hover {
 #intro-resume-button:hover {
     margin-left: 15px !important;
 }
+
+.highlighted-word {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #1f487e;
+}

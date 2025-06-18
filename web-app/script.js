@@ -57,8 +57,6 @@ function toMinutes(duration) {
 }
 
 function loadFromRecords(records) {
-    $('.transcript').slideUp(0)
-    $('.central-panel').css('opacity', 1)
     console.log(records)
     $('.transcript').html('')
     console.log('inside load from records')
@@ -137,6 +135,40 @@ function loadFromRecords(records) {
     });
 
     $('.transcript').slideDown(1000)
+
+    var audioElement = document.getElementById('audio-host')
+
+    var wordCounter = 0;
+    var words = $('.word')
+
+    console.log(words)
+    var currWord = words[wordCounter]
+    console.log(currWord)
+    var currWordEnd = parseFloat($(currWord).attr('end'))
+
+    audioElement.addEventListener("timeupdate",function(){
+        console.log(wordCounter)
+        var currentTime = audioElement.currentTime;
+        
+        // update time counter
+        var seconds = Math.round(currentTime);
+        $("#currentTime").text(toMinutes(seconds));
+
+        for (var i=0; i<words.length; i++) {
+            wordEnd = parseFloat($(words[i]).attr('end'))
+            if (wordEnd > currentTime) {
+                $(words[i]).attr('class', 'word highlighted-word')
+                break
+            } else {
+                $(words[i]).attr('class', 'word')
+            }
+        }
+    });
+
+    audioElement.addEventListener('ended', function() {
+        wordCounter = 0;
+    }, false);
+
     return(records)
 }
 
@@ -168,19 +200,17 @@ function disappearRight(selector) {
 
 
 $(function() {
+
     
     var comments = document.querySelector('.comments');
     var audioElement = document.getElementById('audio-host')
     
     audioElement.addEventListener('ended', function() {
-        this.play();
+        this.pause();
+        audioElement.currentTime = 0;
+        $('#play').css('display', 'none')
+        $('#pause').css('display', 'inline')
     }, false);
-    
-    audioElement.addEventListener("canplay",function(){
-        $("#length").text(" / " + toMinutes(audioElement.duration));
-        $("#source").text("Source:" + audioElement.src);
-        $("#status").text("Status: Ready to play").css("color","green");
-    });
     
     $('#play').click(function() {
         audioElement.play();
@@ -198,12 +228,6 @@ $(function() {
     
     $('#restart').click(function() {
         audioElement.currentTime = 0;
-    });
-
-    audioElement.addEventListener("timeupdate",function(){
-        var currentTime = audioElement.currentTime;
-        var seconds = Math.round(currentTime);
-        $("#currentTime").text(toMinutes(seconds));
     });
 
 
@@ -242,13 +266,16 @@ $(function() {
         data.append('file', file)
         data.append('user', 'hubot')
 
+        $('.transcript').slideUp(0)
+        $('.central-panel').css('opacity', 1)
+
         console.log('sending')
         let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
             method: 'POST',
             body: data
         })
 
-
+        
 
         const r = await response.json();
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
