@@ -208,8 +208,8 @@ $(function() {
     audioElement.addEventListener('ended', function() {
         this.pause();
         audioElement.currentTime = 0;
-        $('#play').css('display', 'none')
-        $('#pause').css('display', 'inline')
+        $('#play').css('display', 'inline')
+        $('#pause').css('display', 'none')
     }, false);
     
     $('#play').click(function() {

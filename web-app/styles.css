@@ -237,6 +237,7 @@ button:hover {
     margin-top: -60px;
     opacity: .5;
     z-index: -99;
+    display: none;
 }
 
 #laurel-right {
