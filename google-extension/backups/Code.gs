@@ -65,16 +65,6 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
-function totalCharacters() {
-  const body =
-    DocumentApp.getActiveDocument().getActiveTab().asDocumentTab().getBody();
-
-  // Use editAsText to obtain a single text element containing
-  // all the characters in the tab.
-  const text = body.editAsText();
-  return text.getText().length;
-}
-
 /**
  * Gets the text the user has selected. If there is no selection,
  * this function displays an error message.
@@ -257,55 +247,3 @@ function translateText(text, origin, dest) {
   return LanguageApp.translate(text, origin, dest);
 }
 // [END apps_script_docs_translate_quickstart]
-
-/**
- * Returns the contents of an HTML file.
- * @param {string} file The name of the file to retrieve.
- * @return {string} The content of the file.
- */
-function include(file) {
-  return HtmlService.createTemplateFromFile(file).evaluate().getContent();
-}
-
-/**
- * Gets the current cursor and selector information for the document.
- * @return {Object} The infomration.
- */
-function getDocumentInfo() {
-  var document = DocumentApp.getActiveDocument();
-  var cursor = document.getCursor();
-  var selection = document.getSelection();
-  var result = {};
-  if (cursor) {
-    result.cursor = {
-      element: getElementInfo(cursor.getElement()),
-      offset: cursor.getOffset(),
-      surroundingText: cursor.getSurroundingText().getText(),
-      surroundingTextOffset: cursor.getSurroundingTextOffset()
-    };
-  }
-  if (selection) {
-    result.selection = {
-      selectedElements: selection.getSelectedElements().map(function(selectedElement) {
-        return {
-          element: getElementInfo(selectedElement.getElement()),
-          partial: selectedElement.isPartial(),
-          startOffset: selectedElement.getStartOffset(),
-          endOffsetInclusive: selectedElement.getEndOffsetInclusive()
-        };
-      })
-    };
-  }
-  return result;
-}
-
-/**
- * Gets information about a given element.
- * @param {Element} element The element.
- * @return {Object} The information.
- */
-function getElementInfo(element) {
-  return {
-    type: String(element.getType())
-  };
-}

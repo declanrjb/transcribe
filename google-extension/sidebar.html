@@ -59,23 +59,153 @@
 }
 
 #upload-audio:hover {
-  background: #10043a;
+  background: #1f487e;
+}
+
+#pause {
+    display: none;
 }
   </style>
   <title></title>
       <script src="https://kit.fontawesome.com/bb1d08a9b2.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- External Libraries -->
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.0/themes/smoothness/jquery-ui.css" />
+
+<!-- Custom Styles -->
+<style>
+html {
+  height: 100%;
+}
+body {
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  height: 100%;
+  padding: 10px 12px;
+}
+table {
+  border-spacing: 0;
+}
+td {
+  vertical-align: top;
+}
+fieldset {
+  margin-bottom: 1em;
+}
+input {
+  width: 160px;
+}
+
+.na {
+  color: gray;
+  text-align: center;
+}
+
+#results {
+  height: 99%;
+  overflow: auto;
+}
+#selection table {
+  width: 100%;
+}
+#selection th, #selection td {
+  border: 1px solid gray;
+}
+#error {
+  background-color: red;
+  color: white;
+  display: none;
+  padding: 1em;
+}
+#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(200,200,200,0.6);  */
+  background-color: rgba(200,200,200,1);
+  font-weight: bold;
+}
+#loading-content {
+  position: relative;
+  top: 50%;
+  margin: 0 auto;
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  background-color: white;
+  border: 1px solid black;
+  text-align: center;
+}
+</style>
 </head>
 <body>
 <div class="sidebar branding-below">
-  <form>
+  <audio src="kate-micro.mp3" id="audio-host"></audio>
+    <button id="upload-audio" class="file-button">Upload <i class="fa-solid fa-file-audio"></i></button>
     <div class="block" id="button-bar">
-      <button id="upload-audio" class="file-button">Upload <i class="fa-solid fa-file-audio"></i></button>
       <input type='file' id="audio-input" hidden/>
+      <button id="play" class="audio-button"><i class="fa-solid fa-play"></i></button>
+      <button id="pause" class="audio-button"><i class="fa-solid fa-pause"></i></button>
+      <button id="restart" class="audio-button"><i class="fa-solid fa-arrows-rotate"></i></button>
     </div>
-  </form>
+    <div id="loading">
+      <div id="loading-content">Loading ...</div>
+    </div>
+    <div id="error"></div>
+    <div id="results">
+      <fieldset id="cursor">
+        <legend>Cursor</legend>
+        <table>
+          <tr>
+            <td><label>Element Type:</label></td>
+            <td><input id="element-type" type="text" /></td>
+          </tr>
+          <tr>
+            <td><label>Offset:</label></td>
+            <td><input id="offset" type="text" /></td>
+          </tr>
+          <tr>
+            <td><label>Surrounding Text:</label></td>
+            <td><input id="surrounding-text" type="text" /></td>
+          </tr>
+          <tr>
+            <td><label>Surrounding Text Offset:</label></td>
+            <td><input id="surrounding-text-offset" type="text" /></td>
+          </tr>
+        </table>
+      </fieldset>
+
+      <p id="audio-progress">hello world</p>
+      <fieldset id="selection">
+        <legend>Selection</legend>
+        <table>
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Partial</th>
+              <th>Start</th>
+              <th>End</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </fieldset>
+
+      <p>
+        Automatically refreshed every few seconds.<br/>
+        Last updated <strong id="lastupdated"></strong>.
+      </p>
+      <button id="toggle" onclick="toggleRefresh();" data-stoptext="◾ Stop" data-resumetext="▶ Resume">◾ Stop</button>
+    </div>
 </div>
+
+
+
+
 
 <div class="sidebar bottom">
   <i class="fa-solid fa-ear-listen"></i>
@@ -94,6 +224,33 @@
     google.script.run.withSuccessHandler(loadPreferences)
             .withFailureHandler(showError).getPreferences();
 
+    var audioElement = document.getElementById('audio-host')
+    
+    audioElement.addEventListener('ended', function() {
+        this.pause();
+        audioElement.currentTime = 0;
+        $('#play').css('display', 'inline')
+        $('#pause').css('display', 'none')
+    }, false);
+
+    $('#play').click(function() {
+        audioElement.play();
+        $("#status").text("Status: Playing");
+        $('#pause').css('display', 'inline');
+        $(this).css('display', 'none');
+    });
+    
+    $('#pause').click(function() {
+        audioElement.pause();
+        $("#status").text("Status: Paused");
+        $('#play').css('display', 'inline');
+        $(this).css('display', 'none');
+    });
+    
+    $('#restart').click(function() {
+        audioElement.currentTime = 0;
+    });
+
     $('#upload-audio').on('click', function() {
         $('#audio-input').click()
     })
@@ -105,7 +262,7 @@
         //console.log(file)
         //docInsertText('hello world this is an input')
 
-        // $('#audio-host').attr('src', URL.createObjectURL(file))
+        $('#audio-host').attr('src', URL.createObjectURL(file))
         var data = new FormData()
         data.append('file', file)
         data.append('user', 'hubot')
@@ -138,6 +295,10 @@
             prevSpeaker = currentSpeaker;
         }
 
+        // var audioElement = document.getElementById('audio-host')
+        // audioElement.play()
+        ('#play').click()
+
         google.script.run
           .withSuccessHandler(
                   function(returnSuccess, element) {
@@ -169,31 +330,6 @@
   }
 
   /**
-   * Runs a server-side function to translate the user-selected text and update
-   * the sidebar UI with the resulting translation.
-   */
-  function runTranslation() {
-    this.disabled = true;
-    $('#error').remove();
-    const origin = $('input[name=origin]:checked').val();
-    const dest = $('input[name=dest]:checked').val();
-    const savePrefs = $('#save-prefs').is(':checked');
-    google.script.run
-            .withSuccessHandler(
-                    function(textAndTranslation, element) {
-                      $('#translated-text').val(textAndTranslation.translation);
-                      element.disabled = false;
-                    })
-            .withFailureHandler(
-                    function(msg, element) {
-                      showError(msg, $('#button-bar'));
-                      element.disabled = false;
-                    })
-            .withUserObject(this)
-            .getTextAndTranslation(origin, dest, savePrefs);
-  }
-
-  /**
    * Runs a server-side function to insert the translated text into the document
    * at the user's cursor or selection.
    */
@@ -214,21 +350,6 @@
             .insertText('\n blorble blorble');
   }
 
-  function docInsertText(text) {
-    google.script.run
-            .withSuccessHandler(
-                    function(returnSuccess, element) {
-                      element.disabled = false;
-                    })
-            .withFailureHandler(
-                    function(msg, element) {
-                      showError(msg, $('#button-bar'));
-                      element.disabled = false;
-                    })
-            .withUserObject(this)
-            .insertText('hello world');
-  }
-
   /**
    * Inserts a div that contains an error message after a given element.
    *
@@ -241,5 +362,190 @@
   }
 </script>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.10.0/jquery-ui.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script>
+// Constants.
+var REFRESH_WAIT_SECONDS = 1;
+var INACTIVITY_TIMEOUT_MINUTES = 2;
+
+// Global variables.
+var lastResult;
+var refreshOn = true;
+var lastChangedTime;
+var timeoutId;
+
+// On page load.
+$(function() {
+  $('#loading').hide();
+  refreshState();
+});
+
+/**
+ * Refreshes the state information in the sidebar.
+ */
+function refreshState() {
+  google.script.run.withFailureHandler(function(error) {
+    showError(error);
+    tick(null);
+  }).withSuccessHandler(function(result) {
+    hideError();
+    if (!lastResult || !jsonEquals(result.cursor, lastResult.cursor)) {
+      updateCursor(result.cursor);
+    }
+    if (!lastResult || !jsonEquals(result.selection, lastResult.selection)) {
+      jumpAudio(result.selection);
+    }
+    tick(result);
+  }).getDocumentInfo();
+}
+
+/**
+ * Updates the cursor information in the sidebar.
+ * @param {Object} cursor The cursor information.
+ */
+function updateCursor(cursor) {
+  if (cursor) {
+    $('#cursor input').removeAttr('disabled');
+    updateElement('element-type', cursor.element.type);
+    updateElement('offset', cursor.offset);
+    updateElement('surrounding-text', cursor.surroundingText);
+    updateElement('surrounding-text-offset', cursor.surroundingTextOffset);
+  } else {
+    $('#cursor input').val('').attr('disabled', 'true');
+  }
+}
+
+/**
+ * Updates the selection information in the sidebar.
+ * @param {Object} selection The selection information.
+ */
+function updateSelection(selection) {
+  var tableBody = $('#selection table tbody');
+  tableBody.children().remove();
+
+  if (selection) {
+      selection.selectedElements.forEach(function(selectedElement) {
+        var row  = $('<tr>');
+        var data = [
+          selectedElement.element.type,
+          '0',
+          selectedElement.startOffset,
+          selectedElement.endOffsetInclusive
+        ];
+        data.forEach(function(value) {
+          row.append($('<td>').text(value));
+        });
+        tableBody.append(row);
+      });
+    tableBody.effect("highlight", { duration: 1500 });
+  } else {
+    tableBody.append($('<tr><td class="na" colspan="4">None</td></tr>'));
+  }
+  
+}
+
+function jumpAudio(selection) {
+  google.script.run.withFailureHandler(function(error) {
+    showError(error);
+    tick(null);
+  }).withSuccessHandler(function(result) {
+    var audioElement = document.getElementById('audio-host')
+    selection.selectedElements.forEach(function(selectedElement) {
+        var progress = selectedElement.startOffset / result
+        audioElement.currentTime = audioElement.duration * progress
+        $('#audio-progress').text(progress)
+      });
+  }).totalCharacters();
+}
+
+/**
+ * Shows an error message in the sidebar.
+ * @param {string} error The error returned by the server.
+ */
+function showError(error) {
+  $('#error').text(error).show();
+  $('#results').css('color', 'gray');
+}
+
+/**
+ * Hides any error message in the sidebar.
+ */
+function hideError() {
+  $('#error').hide();
+  $('#results').css('color', 'inherit');
+}
+
+/**
+ * Updates the state of the document and sets up the next refresh.
+ * @param {Object} result The last result, if any.
+ */
+function tick(result) {
+  if (result) {
+    if (!jsonEquals(result, lastResult)) {
+      lastChangedTime = new Date();
+    }
+    lastResult = result;
+  }
+  $('#lastupdated').text(new Date().toLocaleTimeString());
+  if (isInactive()) {
+    toggleRefresh();
+    lastResult = null;
+    lastChangedTime = null;
+  }
+  if (refreshOn) {
+    timeoutId = window.setTimeout(refreshState, REFRESH_WAIT_SECONDS * 1000);
+  }
+}
+
+/**
+ * Determines if the document is inactive.
+ * @return {Boolean} True if the document is inactive, false otherwise.
+ */
+function isInactive() {
+  var now = new Date();
+  return lastChangedTime && now.getTime() - lastChangedTime.getTime() > INACTIVITY_TIMEOUT_MINUTES * 60 * 1000;
+}
+
+/**
+ * Toggles whether or not automatic refreshing is on, and updated the button.
+ */
+function toggleRefresh() {
+  var toggle = $('#toggle');
+  if (refreshOn) {
+    refreshOn = false;
+    window.clearTimeout(timeoutId);
+    toggle.text(toggle.data('resumetext'));
+  } else {
+    refreshOn = true;
+    refreshState();
+    toggle.text(toggle.data('stoptext'));
+  }
+}
+
+/**
+ * Updates an element with a new value and highlights it if there is a change.
+ * @param {string} elementId The ID of the element to update.
+ * @param {string} value The new value of the element.
+ */
+function updateElement(elementId, value) {
+  var element = $(document.getElementById(elementId));
+  if (String(element.val()) != String(value)) {
+    element.val(value).effect("highlight", { duration: 1500 });
+  }
+}
+
+/**
+ * Determines if two Objects have the JSON structure.
+ * @param {Object} a The first object.
+ * @param {Object} b The second object.
+ * @return {Boolean} True if both objects have the same JSON structure, false otherwise.
+ */
+function jsonEquals(a, b) {
+  return JSON.stringify(a) == JSON.stringify(b);
+}
+</script>
 </html>
 <!-- [END apps_script_docs_translate_quickstart] -->
