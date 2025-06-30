@@ -282,6 +282,7 @@ $(function() {
         
 
         const r = await response.json();
+        console.log(r)
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
         global_records['transcript']['segments'] = r['transcript']['segments']
         loadFromRecords(r)
