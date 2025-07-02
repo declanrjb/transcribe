@@ -129,6 +129,56 @@ function getPreferences() {
   };
 }
 
+function clientize() {
+
+  // Get the Position of the user's cursor
+  var position = DocumentApp.getActiveDocument().getCursor();
+
+  // Get the element that contains this Position
+  var ref_element = position.getElement();
+
+  // Get the text in the element
+  var text = ref_element.asText().getText(); 
+
+  // Get the cursor's relative location within ref_element.
+  // Verify if cursor is within text elem. or paragraph elem.
+  var ref_offset = position.getOffset();
+  if (ref_element.getType() == DocumentApp.ElementType.PARAGRAPH){
+
+    // Cursor is at beginning or end of line
+    if (ref_offset == 1){
+
+      // Cursor is at last word. Move to the left into TEXT
+      ref_offset = text.length - 1;
+
+    }
+  }
+
+  // Get offset for current word's initial char
+  var offset_first = ref_offset - text.substring(0,ref_offset).split(" ")[text.substring(0,ref_offset).split(" ").length - 1].length;
+
+  // Get how many chars to the end of current word
+  var chars_to_end;
+  if (text.substring(ref_offset, ref_offset + text.length - 1).indexOf(" ") > -1) {
+
+    // if word has a trailing space exclude it from count
+    chars_to_end = text.substring(ref_offset, ref_offset + text.length - 1).indexOf(" ");
+
+  } else {
+    chars_to_end = text.substring(ref_offset, ref_offset + text.length - 1).length - 1;
+  }
+
+  // Get offset for current word's last char
+  var offset_last = ref_offset + chars_to_end;
+
+  // Define the styling attributes
+  var style = {};
+  style[DocumentApp.Attribute.FOREGROUND_COLOR] = '#FF00FF';
+
+  // Apply styling to current word
+  ref_element.asText().setAttributes(offset_first, offset_last, style);
+}
+
 /**
  * Gets the user-selected text and translates it from the origin language to the
  * destination language. The languages are notated by their two-letter short
@@ -265,6 +315,24 @@ function translateText(text, origin, dest) {
  */
 function include(file) {
   return HtmlService.createTemplateFromFile(file).evaluate().getContent();
+}
+
+function jumpCursor(index) {
+ var doc = DocumentApp.getActiveDocument();
+ var paragraph = doc.getBody().getChild(0);
+ var position = doc.newPosition(paragraph.getChild(0), index);
+ doc.setCursor(position);
+}
+
+function getCursorIndex() {
+  return DocumentApp.getActiveDocument().getCursor().getOffset();
+}
+
+function advanceCursor() {
+ var doc = DocumentApp.getActiveDocument();
+ var cursor = doc.getCursor();
+ var position = doc.newPosition(cursor.getElement(), cursor.getOffset() + 1);
+ doc.setCursor(position);
 }
 
 /**

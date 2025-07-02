@@ -47,23 +47,35 @@
     animation-timing-function: linear; 
 }
 
-#upload-audio {
+.audio-button {
     background: #6184d8;
     color: white;
-    width: 100%;
     border: none;
     outline: none;
     border-radius: 15px;
-    font-size: 1.1em;
-    height: 30px;
+    width: calc(33% - 6px);
+    padding: 0px !important;
+    margin: 2px;
 }
 
-#upload-audio:hover {
+.audio-button:hover {
   background: #1f487e;
+  border: none !important;
+  color: white !important;
 }
 
 #pause {
     display: none;
+}
+
+.sidebar {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: 0px;
+    position: absolute;
+    width: calc(100% - 20px);
+    padding-top: 15px;
 }
   </style>
   <title></title>
@@ -145,8 +157,8 @@ input {
 <body>
 <div class="sidebar branding-below">
   <audio src="kate-micro.mp3" id="audio-host"></audio>
-    <button id="upload-audio" class="file-button">Upload <i class="fa-solid fa-file-audio"></i></button>
     <div class="block" id="button-bar">
+      <button id="upload-audio" class="file-button audio-button"><i class="fa-solid fa-cloud-arrow-up"></i></button>
       <input type='file' id="audio-input" hidden/>
       <button id="play" class="audio-button"><i class="fa-solid fa-play"></i></button>
       <button id="pause" class="audio-button"><i class="fa-solid fa-pause"></i></button>
@@ -233,11 +245,43 @@ input {
         $('#pause').css('display', 'none')
     }, false);
 
-    $('#play').click(function() {
-        audioElement.play();
-        $("#status").text("Status: Playing");
-        $('#pause').css('display', 'inline');
-        $(this).css('display', 'none');
+    audioElement.addEventListener("timeupdate",function(){
+        var currentTime = audioElement.currentTime;
+        var audioProgress = currentTime / audioElement.duration;
+
+        google.script.run.withFailureHandler(function(error) {
+          showError(error);
+          tick(null);
+        }).withSuccessHandler(function(totalChars) {
+          var audioElement = document.getElementById('audio-host')
+          var newPosition = Math.round(totalChars * audioProgress)
+
+          $('#audio-progress').text(newPosition)
+
+          google.script.run.withSuccessHandler(loadPreferences)
+            .withFailureHandler(showError).jumpCursor(newPosition);
+        }).totalCharacters();
+
+        // var newPosition = Math.round(339 * audioProgress)
+
+        // $('#audio-progress').text(newPosition)
+
+        // google.script.run.withSuccessHandler(loadPreferences)
+        //   .withFailureHandler(showError).jumpCursor(newPosition);
+
+        // update time counter
+        // var seconds = Math.round(currentTime);
+        // $("#currentTime").text(toMinutes(seconds));
+
+        // for (var i=0; i<words.length; i++) {
+        //     wordEnd = parseFloat($(words[i]).attr('end'))
+        //     if (wordEnd > currentTime) {
+        //         $(words[i]).attr('class', 'word highlighted-word')
+        //         break
+        //     } else {
+        //         $(words[i]).attr('class', 'word')
+        //     }
+        // }
     });
     
     $('#pause').click(function() {
@@ -275,9 +319,10 @@ input {
         })
 
         const r = await response.json();
-        $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
-
+        $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-cloud-arrow-up')
+        console.log(r)
         var data = r['transcript']['segments']
+        var totalChars = Number(r['totalChars']);
 
         var outputText = ""
         
@@ -295,10 +340,6 @@ input {
             prevSpeaker = currentSpeaker;
         }
 
-        // var audioElement = document.getElementById('audio-host')
-        // audioElement.play()
-        ('#play').click()
-
         google.script.run
           .withSuccessHandler(
                   function(returnSuccess, element) {
@@ -311,6 +352,26 @@ input {
                   })
           .withUserObject(this)
           .insertText(outputText);
+
+        $('#play').click(function() {
+          $('#pause').css('display', 'inline');
+          $('#play').css('display', 'none');
+          google.script.run.withFailureHandler(function(error) {
+            showError(error);
+            tick(null);
+          }).withSuccessHandler(function(cursorIndex) {
+            var audioElement = document.getElementById('audio-host')
+              
+            var textProgress = cursorIndex / totalChars;
+            var audioBreakpoint = audioElement.duration * textProgress;
+
+            audioElement.currentTime = audioBreakpoint;
+
+            audioElement.play();
+          }).getCursorIndex();
+        });
+
+        $('#play').click()
     })
   });
 
