@@ -5,3 +5,4 @@ gunicorn
 Flask-CSV
 pandas
 elevenlabs
+OpenAI

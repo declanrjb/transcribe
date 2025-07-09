@@ -10,18 +10,24 @@ import re
 import json
 from elevenlabs.client import ElevenLabs
 from io import BytesIO
+from openai import OpenAI
 
 app = Flask(__name__)
+
+def parse_json(text):
+    if '```json' in text:
+        text = text.replace('```json', '')
+    if '```' in text:
+        text = text.replace('```', '')
+    return json.loads(text)
 
 # no modification required beyond function name
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
-    print('hello world')
     raw_audio = BytesIO(request.files['file'].read())
 
     elevenlabs = ElevenLabs(
         api_key=os.environ.get('ELEVENLABS_API_KEY'),
-        #api_key='sk_412c599fb0a33891e818696239ecc14250afd1c2c8ae32f1'
     )
 
     transcription = elevenlabs.speech_to_text.convert(
@@ -33,6 +39,28 @@ def transcribe():
     )
 
     transcript = dict(transcription)
+
+    # chatgpt's summary
+    prompt = f"""
+            Summarize the following transcript in 300 words or less. Cite notable quotes exactly as they appear in the original transcript. 
+            Structure your response as a JSON file. The JSON should include the summary under a key 'summary'.
+            The JSON should have a second key, "quotes", which should point to a list of dictionary objects. Include each quote cited in the summary under this list of quotes.
+            Each quote object should contain the following: 
+            - A key "quote", which contains the exact quote, and 
+            - A key "insight", which contains your assessment of the quote's value. 
+            - A key "start" which contains the start timestamp for the excerpted quote
+            - A key "end" which contains the end timestamp for the excerpted quote
+            The transcript begins after the colon: {transcript}
+            """
+
+    response = client.responses.create(
+        model="gpt-4.1-nano",
+        input=prompt,
+        key=os.environ.get(OPENAI_API_KEY)
+    )
+
+    summary = parse_json(response.output[0].content[0].text)
+
 
     result = []
     i = 0
@@ -66,7 +94,8 @@ def transcribe():
         'transcript':{
             'segments': result
         },
-        'totalChars': total_chars
+        'totalChars': total_chars,
+        'summary': summary
     }
 
     r = Response(json.dumps(result), mimetype='application/json')
