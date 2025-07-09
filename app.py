@@ -11,6 +11,7 @@ import json
 from elevenlabs.client import ElevenLabs
 from io import BytesIO
 from openai import OpenAI
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -24,6 +25,9 @@ def parse_json(text):
 # no modification required beyond function name
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
+
+    load_dotenv('openai.env')
+
     raw_audio = BytesIO(request.files['file'].read())
 
     elevenlabs = ElevenLabs(
@@ -57,8 +61,7 @@ def transcribe():
 
     response = client.responses.create(
         model="gpt-4.1-nano",
-        input=prompt,
-        key=os.environ.get('OPENAI_API_KEY')
+        input=prompt
     )
 
     summary = parse_json(response.output[0].content[0].text)

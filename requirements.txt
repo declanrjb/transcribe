@@ -6,3 +6,4 @@ Flask-CSV
 pandas
 elevenlabs
 OpenAI
+python-dotenv
