@@ -40,6 +40,8 @@ def transcribe():
 
     transcript = dict(transcription)
 
+    client = OpenAI()
+
     # chatgpt's summary
     prompt = f"""
             Summarize the following transcript in 300 words or less. Cite notable quotes exactly as they appear in the original transcript. 
