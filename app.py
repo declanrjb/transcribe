@@ -58,7 +58,7 @@ def transcribe():
     response = client.responses.create(
         model="gpt-4.1-nano",
         input=prompt,
-        key=os.environ.get(OPENAI_API_KEY)
+        key=os.environ.get('OPENAI_API_KEY')
     )
 
     summary = parse_json(response.output[0].content[0].text)
