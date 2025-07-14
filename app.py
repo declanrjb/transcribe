@@ -54,7 +54,7 @@ def transcribe():
             Structure your response as a JSON file. The JSON should contain a key, "quotes", which should point to a list of dictionary objects, one per quote.
             Each quote object should contain the following: 
             - A key "quote", which contains the exact quote. Ensure that the text of the quote exactly matches the text found in the transcript I am giving you. No modifications whatsoever.
-            - A key "start" which contains the start timestamp for the excerpted quote. The quote you select will consist of a series of segments, each of which will contain start and end timestamps. The "start" timestamp for the quote should be the "start" timestamp of the first segment included in the quote.
+            - A key "segments" which contains the component segments you identified as part of the quote. Return the segments exactly as they appear in the original transcript, including start and end timestamps.
             Return structured JSON only, no yapping.
             The transcript begins after the colon: {transcript}
             """
