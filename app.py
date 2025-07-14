@@ -22,6 +22,25 @@ def parse_json(text):
         text = text.replace('```', '')
     return json.loads(text)
 
+def find_quote_start(quote_text, transcript):
+    quote = quote_text
+    window_size = min(6, len(quote.split(' ')))
+    quote_sample = ' '.join(quote.split(' ')[0:window_size])
+    quote_sample = re.sub(r"[^\w\s]", '', quote_sample).lower()
+
+    words = transcript['words']
+    words = [dict(word) for word in words]
+    words = [word for word in words if len(word['text'].strip()) > 0]
+
+    for i in range(0, len(words)):
+        start = max(0, i - window_size)
+        end = i
+        window = ' '.join([word['text'] for word in words[start:end]])
+        window = re.sub(r"[^\w\s]", '', window).lower()
+        if window == quote_sample:
+            return words[start]['start']
+    return None
+
 # no modification required beyond function name
 @app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
@@ -48,24 +67,28 @@ def transcribe():
 
     # chatgpt's summary
     prompt = f"""
-            You are a news reporter at a major national publication in the United States. You adhere strictly to the Associated Press Styleguide and the Society of Professional Journalists Code of Conduct.
-            Given the following transcript of an interview, identify five key quotes that provide insight into the thoughts and experiences of the interview subject and the topics discussed in the interview.
-            Return quotes exactly as they appear in the original transcript. Do not excerpt quotes where removing surrounding context would convey a different meaning than the speaker intended. If context is relevant, include the context.
-            Structure your response as a JSON file. The JSON should contain a key, "quotes", which should point to a list of dictionary objects, one per quote.
-            Each quote object should contain the following: 
-            - A key "quote", which contains the exact quote. Ensure that the text of the quote exactly matches the text found in the transcript I am giving you. No modifications whatsoever.
-            - A key "words" which contains a list of the component word objects you identified as part of the quote. The input transcript will contain a key "words", pointing to a list of word objects containing the keys "text", "start", and "end". For any word you include in a quote, include the associated word object in this list exactly as it appears in the transcript.
-            Return structured JSON only, no yapping.
-            The transcript begins after the colon: {transcript}
-            """
+        You are a news reporter at a major national publication in the United States. You adhere strictly to the Associated Press Styleguide and the Society of Professional Journalists Code of Conduct.
+        Given the following transcript of an interview, identify five key quotes that provide insight into the thoughts and experiences of the interview subject and the topics discussed in the interview.
+        Return quotes exactly as they appear in the original transcript. Do not excerpt quotes where removing surrounding context would convey a different meaning than the speaker intended. If context is relevant, include the context.
+        Structure your response as a JSON file. The JSON should contain a key, "quotes", which should point to a list of dictionary objects, one per quote.
+        Each quote object should contain the following: 
+        - A key "quote", which contains the exact quote. Ensure that the text of the quote exactly matches the text found in the transcript I am giving you. No modifications whatsoever.
+        Return structured JSON only, no yapping.
+        The transcript begins after the colon: {transcript}
+        """
 
-#            - A key "end" which contains the end timestamp for the excerpted quote, being the "end" timestamp of the first word included in the quote, as found in the transcript.
     response = client.responses.create(
         model="gpt-4.1-nano",
         input=prompt
     )
 
-    quotes = parse_json(response.output[0].content[0].text)
+    # get timestamps for the quotes
+    quotes = parse_json(response.output[0].content[0].text)['quotes']
+
+    for quote in quotes:
+        quote['start'] = find_quote_start(quote['quote'], transcript)
+
+    quotes = [quote for quote in quotes if quote['start'] is not None]
 
     result = []
     i = 0
@@ -100,7 +123,8 @@ def transcribe():
             'segments': result
         },
         'totalChars': total_chars,
-    } | quotes
+        'quotes': quotes
+    }
 
     r = Response(json.dumps(result), mimetype='application/json')
 
