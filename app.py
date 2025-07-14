@@ -48,14 +48,15 @@ def transcribe():
 
     # chatgpt's summary
     prompt = f"""
-            Summarize the following transcript in 300 words or less. Cite notable quotes exactly as they appear in the original transcript. 
-            Structure your response as a JSON file. The JSON should include the summary under a key 'summary'.
-            The JSON should have a second key, "quotes", which should point to a list of dictionary objects. Include each quote cited in the summary under this list of quotes.
+            You are a news reporter at a major national publication in the United States. You adhere strictly to the Associated Press Styleguide and the Society of Professional Journalists Code of Conduct.
+            Given the following transcript of an interview, identify five key quotes that provide insight into the thoughts and experiences of the interview subject and the topics discussed in the interview.
+            Return quotes exactly as they appear in the original transcript. Do not excerpt quotes where removing surrounding context would convey a different meaning than the speaker intended. If context is relevant, include the context.
+            Structure your response as a JSON file. The JSON should contain a key, "quotes", which should point to a list of dictionary objects, one per quote.
             Each quote object should contain the following: 
-            - A key "quote", which contains the exact quote, and 
-            - A key "insight", which contains your assessment of the quote's value. 
+            - A key "quote", which contains the exact quote
             - A key "start" which contains the start timestamp for the excerpted quote
             - A key "end" which contains the end timestamp for the excerpted quote
+            Return structured JSON only, no yapping.
             The transcript begins after the colon: {transcript}
             """
 
@@ -64,8 +65,7 @@ def transcribe():
         input=prompt
     )
 
-    summary = parse_json(response.output[0].content[0].text)
-
+    quotes = parse_json(response.output[0].content[0].text)
 
     result = []
     i = 0
@@ -100,8 +100,7 @@ def transcribe():
             'segments': result
         },
         'totalChars': total_chars,
-        'summary': summary
-    }
+    } | quotes
 
     r = Response(json.dumps(result), mimetype='application/json')
 
