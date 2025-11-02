@@ -12,7 +12,7 @@
     <script src="web-app/script.js"></script>
 </head>
 <body>
-    <audio src="kate-micro.mp3" id="audio-host"></audio>
+    <audio src="" id="audio-host"></audio>
     <div class="central-panel">
         <column style="width: 70%;" id="left-col">
             <div class="controls">
@@ -31,6 +31,13 @@
             <div class="transcript"></div>
         </column>
         <column style="width: 30%;" id="right-col">
+            <div class="suggested-quotes" id="quotes">
+                <p class="quote-header quotes-on" style="display: block;"><i class="fa-solid fa-square-caret-right"></i> <b>View Suggested Quotes</b></p>
+                <p class="quote-header quotes-off" style="display: none;"><i class="fa-solid fa-square-caret-down"></i> <b>Hide Suggested Quotes</b></p>
+                <div class="quote-list" style="display: none;">
+                    <hr>
+                </div>
+            </div>
             <div class="comments"></div>
         </column>
         

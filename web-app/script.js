@@ -57,14 +57,10 @@ function toMinutes(duration) {
 }
 
 function loadFromRecords(records) {
-    console.log(records)
     $('.transcript').html('')
-    console.log('inside load from records')
-    console.log(records)
     var comments = document.querySelector('.comments');
     var transcript = document.querySelector('.transcript');
     data = records['transcript']['segments']
-    console.log(data)
     var block;
 
     block = addChildClassed(transcript, 'text-block' + ' ' + 'speaker-' + currentSpeaker, tag='p');
@@ -96,8 +92,29 @@ function loadFromRecords(records) {
         prevSpeaker = currentSpeaker;
     }
 
-    $('.speaker-label').on('click', function() {
-        console.log('speaker label clicked')
+    quotes = records['quotes']
+    quoteWrapper = document.querySelector('.quote-list')
+    for (var i=0; i<quotes.length; i++) {
+        var quote = quotes[i];
+        var newQuote = addChildClassed(quoteWrapper, 'quote', tag='div');
+        newQuote.textContent = quote['quote']
+        newQuote.setAttribute('start', quote['start'])
+    }
+
+    $('.quote').on('click', function(e) {
+        audioElement.currentTime = e.currentTarget.getAttribute('start')
+    })
+
+    $('.quotes-on').on('click', function(e) {
+        $('.quotes-on').css('display', 'none')
+        $('.quotes-off').css('display', 'block')
+        $('.quote-list').css('display', 'block')
+    })
+
+    $('.quotes-off').on('click', function(e) {
+        $('.quotes-on').css('display', 'block')
+        $('.quotes-off').css('display', 'none')
+        $('.quote-list').css('display', 'none')
     })
 
     $('.speaker-label').on('change', function(e) {
@@ -126,7 +143,6 @@ function loadFromRecords(records) {
     }
 
     $( '.word' ).on( "dblclick", function(e) {
-        console.log(e)
         var audioElement = document.getElementById('audio-host')
         audioElement.currentTime = e.currentTarget.getAttribute('start')
         audioElement.play()
@@ -141,13 +157,10 @@ function loadFromRecords(records) {
     var wordCounter = 0;
     var words = $('.word')
 
-    console.log(words)
     var currWord = words[wordCounter]
-    console.log(currWord)
     var currWordEnd = parseFloat($(currWord).attr('end'))
 
     audioElement.addEventListener("timeupdate",function(){
-        console.log(wordCounter)
         var currentTime = audioElement.currentTime;
         
         // update time counter
@@ -245,9 +258,7 @@ $(function() {
         reader.readAsText(e.target.files[0]);
 
         function onReaderLoad(event){
-            console.log(event.target.result);
             var data = JSON.parse(event.target.result);
-            console.log(data);
             global_records['transcript']['segments'] = data['transcript']['segments']
             loadFromRecords(data)
         }
@@ -272,17 +283,12 @@ $(function() {
             opacity: 1
             }, 500);
         
-
-        console.log('sending')
         let response = await fetch('https://transcribe-qn6o.onrender.com/transcribe', {
             method: 'POST',
             body: data
         })
 
-        
-
         const r = await response.json();
-        console.log(r)
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
         global_records['transcript']['segments'] = r['transcript']['segments']
         loadFromRecords(r)
@@ -335,7 +341,6 @@ $(function() {
     });
 
     $('#download-records').on('click', function() {
-        console.log(global_records)
         $("<a />", {
             "download": 'transcript.json'.replace('.json', '_annotated.json'),
             "href" : "data:application/json," + encodeURIComponent(JSON.stringify(global_records))

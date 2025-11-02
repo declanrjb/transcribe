@@ -68,7 +68,7 @@ def transcribe():
     # chatgpt's summary
     prompt = f"""
         You are a news reporter at a major national publication in the United States. You adhere strictly to the Associated Press Styleguide and the Society of Professional Journalists Code of Conduct.
-        Given the following transcript of an interview, identify five to ten key quotes that provide insight into the thoughts and experiences of the interview subject and the topics discussed in the interview.
+        Given the following transcript of an interview, identify three to five key quotes that provide insight into the thoughts and experiences of the interview subject and the topics discussed in the interview.
         Return quotes exactly as they appear in the original transcript. Do not excerpt quotes where removing surrounding context would convey a different meaning than the speaker intended. If context is relevant, include the context.
         Structure your response as a JSON file. The JSON should contain a key, "quotes", which should point to a list of dictionary objects, one per quote.
         Each quote object should contain the following: 

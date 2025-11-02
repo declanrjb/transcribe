@@ -49,7 +49,6 @@ column {
 
 .controls {
     position: fixed;
-
     width: fit-content;
     width: 500px;
 }
@@ -247,4 +246,33 @@ button:hover {
 #laurel-left {
     transform: scale(-1, 1);
     left: -110px;
+}
+
+.suggested-quotes {
+    display: block;
+    width: 100%;
+    box-shadow: 0 1px 5px #a6a6a6;
+    border-radius: 20px;
+    background: white;
+    position: relative;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    z-index: 99;
+}
+
+.quote {
+    font-size: 1.1em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 2px;
+}
+
+.quote:hover {
+    background-color: yellow;
+}
+
+.quote-header {
+    font-size: 1.1em;
 }
