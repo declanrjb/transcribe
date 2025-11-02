@@ -103,6 +103,9 @@ function loadFromRecords(records) {
 
     $('.quote').on('click', function(e) {
         audioElement.currentTime = e.currentTarget.getAttribute('start')
+        audioElement.play()
+        $('#play').css('display', 'none')
+        $('#pause').css('display', 'inline')
     })
 
     $('.quotes-on').on('click', function(e) {
