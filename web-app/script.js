@@ -290,6 +290,7 @@ $(function() {
 
         const r = await response.json();
         $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
+        $('.suggested-quotes').css('opacity', 1)
         global_records['transcript']['segments'] = r['transcript']['segments']
         loadFromRecords(r)
     })
