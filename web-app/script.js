@@ -3,7 +3,8 @@ var generated_transcript = 'kate-sample_transcript.json'
 var global_records = {
     'notes': [],
     'speakers': {},
-    'transcript': {}
+    'transcript': {},
+    'quotes': []
 }
 
 function addChildClassed(parent,newClass,tag='div') {
@@ -94,7 +95,7 @@ function loadFromRecords(records) {
         prevSpeaker = currentSpeaker;
     }
 
-    quotes = records['notes']
+    quotes = records['quotes']
     quoteWrapper = document.querySelector('.quote-list')
     for (var i=0; i<quotes.length; i++) {
         var quote = quotes[i];
@@ -265,6 +266,16 @@ $(function() {
         function onReaderLoad(event){
             var data = JSON.parse(event.target.result);
             global_records['transcript']['segments'] = data['transcript']['segments']
+
+            $('.transcript').slideUp(0)
+            $('.central-panel').css('display', 'block')
+            $('.control-buttons').animate({
+                opacity: 1
+                }, 500);
+                
+            $('#upload-audio>.fa-solid').attr('class', 'fa-solid fa-file-audio')
+            $('.suggested-quotes').css('opacity', 1)
+
             loadFromRecords(data)
         }
     })
