@@ -92,7 +92,7 @@ function loadFromRecords(records) {
         prevSpeaker = currentSpeaker;
     }
 
-    quotes = records['quotes']
+    quotes = records['notes']
     quoteWrapper = document.querySelector('.quote-list')
     for (var i=0; i<quotes.length; i++) {
         var quote = quotes[i];
@@ -302,13 +302,13 @@ $(function() {
     var newNote;
     var newComment;
     $(document).on('keypress',function(e) {
-        if (e.which == 13) {
+        if (e.which == 39) {
 
             if (textEnterActive) {
                 textEnterActive = false;
                 $(newComment).css('border-color', 'black');
                 global_records['notes'].push(newNote);
-                var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().extentNode.parentElement.nextSibling.id)
+                var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().focusNode.parentElement.nextSibling.id)
                 var highlightId = highlightSpans(spans)
                 newNote['highlightId'] = highlightId
                 newNote['highlightAnchor'] = document.querySelector('#' + highlightId).outerHTML
@@ -326,6 +326,20 @@ $(function() {
                 var highlightTop = $(window.getSelection().anchorNode.parentElement).position().top;
                 $(newComment).css('top', highlightTop + 'px')
             }            
+        } else if (e.which == 13) {
+            var spans = $(window.getSelection().anchorNode.parentElement.previousSibling).nextUntil('#' + window.getSelection().focusNode.parentElement.nextSibling.id)
+            var highlightId = highlightSpans(spans)
+
+            newNote = {
+                'selected': showSelected(),
+                'note': '',
+            }
+
+            newNote['highlightId'] = highlightId
+            newNote['highlightAnchor'] = document.querySelector('#' + highlightId).outerHTML
+            newNote['highlightContents'] = document.querySelector('#' + highlightId).innerHTML
+
+            global_records['notes'].push(newNote);
         } else {
             if (textEnterActive) {
                 if (e.which == 32) {
@@ -342,17 +356,17 @@ $(function() {
             }
             
         }
-    });
 
-    $('#download-records').on('click', function() {
-        $("<a />", {
-            "download": 'transcript.json'.replace('.json', '_annotated.json'),
-            "href" : "data:application/json," + encodeURIComponent(JSON.stringify(global_records))
-          }).appendTo("body")
-          .click(function() {
-             $(this).remove()
-          })[0].click()
-    }) 
+        $('#download-records').on('click', function() {
+            $("<a />", {
+                "download": 'transcript.json'.replace('.json', '_annotated.json'),
+                "href" : "data:application/json," + encodeURIComponent(JSON.stringify(global_records))
+              }).appendTo("body")
+              .click(function() {
+                 $(this).remove()
+              })[0].click()
+        }) 
+    });
 
     $('#intro-upload-button').on('click', function() {
         disappear('.intro-panel')
