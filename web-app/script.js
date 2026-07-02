@@ -95,13 +95,15 @@ function loadFromRecords(records) {
         prevSpeaker = currentSpeaker;
     }
 
-    quotes = records['quotes']
-    quoteWrapper = document.querySelector('.quote-list')
-    for (var i=0; i<quotes.length; i++) {
-        var quote = quotes[i];
-        var newQuote = addChildClassed(quoteWrapper, 'quote', tag='div');
-        newQuote.textContent = quote['quote']
-        newQuote.setAttribute('start', quote['start'])
+    if ('quotes' in records) {
+        quotes = records['quotes']
+        quoteWrapper = document.querySelector('.quote-list')
+        for (var i=0; i<quotes.length; i++) {
+            var quote = quotes[i];
+            var newQuote = addChildClassed(quoteWrapper, 'quote', tag='div');
+            newQuote.textContent = quote['quote']
+            newQuote.setAttribute('start', quote['start'])
+        }
     }
 
     $('.quote').on('click', function(e) {
