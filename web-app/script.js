@@ -57,6 +57,8 @@ function toMinutes(duration) {
 }
 
 function loadFromRecords(records) {
+    console.log(records)
+
     $('.transcript').html('')
     var comments = document.querySelector('.comments');
     var transcript = document.querySelector('.transcript');
